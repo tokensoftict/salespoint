@@ -40,8 +40,8 @@ function myAccessGroup()
 function getUserMenu()
 {
     $groupMenu = loadUserMenu();
-
-    $userMenus = '<li><a href="' . route("dashboard") . '">Dashboard</a></li>';
+    //<li><a href="' . route("dashboard") . '">Dashboard</a></li>
+    $userMenus = '';
 
     if ($groupMenu) {
         $lastModule = '';
@@ -56,9 +56,9 @@ function getUserMenu()
                 $isFirstRun = false;
                 $userMenus .= '<li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-submenu="" aria-expanded="false">' . $menu->module->label . '</a>
-                <ul class="dropdown-menu" style="font-size: 12.5px">';
+                <ul class="dropdown-menu" style="font-size: 10px;font-weight:bolder">';
             }
-            if ($menu->visibility) $userMenus .= '<li><a href="' . route($menu->route) . '">' . $menu->name . '</a></li>';
+            if ($menu->visibility) $userMenus .= '<li><a style="font-size: 10px;font-weight:bolder" href="' . route($menu->route) . '">' . $menu->name . '</a></li>';
             $lastModule = $menu->module_id;
         }
         if (!$isFirstRun) {
@@ -110,7 +110,13 @@ function setPageContent($pageblade, $data = array(), $layout = 'layouts.app')
     return view($layout, ['content' => view($pageblade, $data)]);
 }
 
+function getCurrentPeriod()
+{
+    return \App\Models\PayrollPeriod::where("current",1)->first() ?? false;
+}
+
 function getStoreSettings(){
+
     return json_decode(json_encode(Valuestore::make(storage_path('app/settings.json'))->all()));
 }
 
@@ -126,6 +132,24 @@ function month_year($time = false, $pad = false)
 function time_offset()
 {
     return 0;
+}
+
+function eng_str_date($time = false, $pad = false)
+{
+    if (!$time) $time = time() + time_offset();
+    else $time = strtotime($time);
+    if ($pad) $pad = ". h:i:s A";
+    else $pad = "";
+    return date('d/m/Y' . $pad, $time);
+}
+
+function mysql_str_date($time = false, $pad = false)
+{
+    if (!$time) $time = time() + time_offset();
+    else $time = strtotime($time);
+    if ($pad) $pad = ". h:i:s A";
+    else $pad = "";
+    return date('Y-m-d' . $pad, $time);
 }
 
 function str_date($time = false, $pad = false)

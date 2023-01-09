@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Department
- * 
+ *
  * @property int $id
  * @property string $name
  * @property bool $enabled
@@ -32,4 +32,14 @@ class Department extends Model
 		'name',
 		'enabled'
 	];
+
+
+    public static $fields  = [
+        'name',
+        'enabled'
+    ];
+
+    public static $validation  = [
+        'name' => 'required'
+    ];
 }

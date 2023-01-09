@@ -10,17 +10,26 @@
                             {{ $title }}
                         </header>
                         <div class="panel-body">
-                            <form id="validate" action="{{ route('manufacturer.update',$category->id) }}" enctype="multipart/form-data" method="post">
+                            <form id="validate" action="{{ route('deduction.update',$deduction->id) }}" enctype="multipart/form-data" method="post">
                                 {{ csrf_field() }}
                                 {{ method_field('PUT') }}
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" value="{{ old('name', $category->name) }}" required  class="form-control" name="name" placeholder="Manufacturer Name"/>
+                                    <input type="text" value="{{ old('name', $deduction->name) }}" required  class="form-control" name="name" placeholder="Deduction"/>
                                     @if ($errors->has('name'))
                                         <label for="name-error" class="error"
                                                style="display: inline-block;">{{ $errors->first('name') }}</label>
                                     @endif
                                 </div>
+                                <!--
+                                <div class="form-group">
+                                    <label>Default</label>
+                                    <select class="form-control" name="default">
+                                        <option {{ old('default',$deduction->default) == "0" ? 'selected' : "" }} value="0">No</option>
+                                        <option {{ old('default',$deduction->default) == "1" ? 'selected' : "" }} value="1">Yes</option>
+                                    </select>
+                                </div>
+                                -->
                                 <div class="pull-left">
                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Update</button>
                                 </div>

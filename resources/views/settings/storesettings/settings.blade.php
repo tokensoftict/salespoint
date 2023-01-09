@@ -38,6 +38,10 @@
                                 <input  type="text"  value="{{ old('tax',@$store->tax) }}"  class="form-control" name="tax" placeholder="VAT"/>
                             </div>
                             <div class="form-group">
+                                <label>Employee Number Prefix</label>
+                                <input  type="text"  value="{{ old('tax',@$store->emp_number_prefix) }}"  class="form-control" name="emp_number_prefix" placeholder="Employee Number Prefix"/>
+                            </div>
+                            <div class="form-group">
                                 <label>Near Expiry Days</label>
                                 <input  type="number" value="{{ old('near_expiry_days',@$store->near_expiry_days) }}" required class="form-control" name="near_expiry_days" placeholder="Near Expiry Days"/>
                                 @if ($errors->has('near_expiry_days'))

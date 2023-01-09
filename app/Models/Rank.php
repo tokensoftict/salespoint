@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Rank
- * 
+ *
  * @property int $id
  * @property string $name
  * @property bool $permanent
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $enabled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Employee[] $employees
  * @property Collection|Payslip[] $payslips
  *
@@ -46,6 +46,20 @@ class Rank extends Model
 		'enabled'
 	];
 
+    public static $fields = [
+        'name',
+        'permanent',
+        'next_rank_id',
+        'salary',
+        'enabled'
+    ];
+
+    public static $validation = [
+        'name' => 'required',
+        'salary' => 'required'
+    ];
+
+
 	public function employees()
 	{
 		return $this->hasMany(Employee::class);
@@ -55,4 +69,6 @@ class Rank extends Model
 	{
 		return $this->hasMany(Payslip::class);
 	}
+
+
 }

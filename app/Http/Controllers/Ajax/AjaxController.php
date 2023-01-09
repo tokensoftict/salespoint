@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ajax;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\Stock;
 use App\Models\Stockbatch;
 use App\Models\Warehousestore;
@@ -47,7 +48,41 @@ class AjaxController extends Controller
         return $available;
     }
 
+    public function findemployee(Request  $request)
+    {
 
+        $result = [];
+
+        if($request->get('searchTerm') && $request->get('query')){
+            return response()->json($result);
+        }
+
+        if(!$request->get('searchTerm') && !$request->get('query')){
+            return response()->json($result);
+        }
+
+        $search = ($request->get('query') ? $request->get('query') : $request->get('searchTerm'));
+
+
+        $employees =  Employee::where(function ($query) use (&$search){
+            $words =  explode(' ', $search);
+            foreach ($words as $word)
+            {
+                $query->orWhere('surname', 'LIKE', "%{$word}%");
+                $query->orWhere('employee_no', 'LIKE', "%{$word}%");
+                $query->orWhere('other_names', 'LIKE', "%{$word}%");
+            }
+        })->where("status",1)->get();
+
+
+
+       foreach ($employees as $employee)
+       {
+           $result[] = ['text'=>$employee->surname." ".$employee->other_names, "id"=>$employee->id];
+       }
+
+        return response()->json($result);
+    }
 
     public function findanystock(Request $request){
 

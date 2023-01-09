@@ -20,24 +20,26 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
+                                <th>Default</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
-                            @foreach($categories as $category)
+                            @foreach($allowances as $allowance)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $category->name }}</td>
-                                    <td>{!! $category->status == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
+                                    <td>{{ $allowance->name }}</td>
+                                    <td>{!! $allowance->default == 1 ? label("Yes","success") : label("No","danger") !!}</td>
+                                    <td>{!! $allowance->enabled == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
                                     <td>
-                                        @if (userCanView('manufacturer.toggle'))
-                                            @if($category->status == 1)
-                                                <a href="{{ route('manufacturer.toggle',$category->id) }}" class="btn btn-danger btn-sm">Disable</a>
+                                        @if (userCanView('allowance.toggle') && $allowance->default != 1)
+                                            @if($allowance->enabled == 1)
+                                                <a href="{{ route('allowance.toggle',$allowance->id) }}" class="btn btn-danger btn-sm">Disable</a>
                                             @else
-                                                <a href="{{ route('manufacturer.toggle',$category->id) }}" class="btn btn-success btn-sm">Enable</a>
+                                                <a href="{{ route('allowance.toggle',$allowance->id) }}" class="btn btn-success btn-sm">Enable</a>
                                             @endif
                                     @endif
-                                     @if (userCanView('manufacturer.edit'))
-                                                <a href="{{ route('manufacturer.edit',$category->id) }}" class="btn btn-success btn-sm">Edit</a>
+                                     @if (userCanView('allowance.edit') && $allowance->default != 1)
+                                                <a href="{{ route('allowance.edit',$allowance->id) }}" class="btn btn-success btn-sm">Edit</a>
                                     @endif
                                 </tr>
                             @endforeach
@@ -53,16 +55,27 @@
                             {{ $title2 }}
                         </header>
                         <div class="panel-body">
-                            <form id="validate" action="{{ route('manufacturer.store') }}" enctype="multipart/form-data" method="post">
+                            <form id="validate" action="{{ route('allowance.store') }}" enctype="multipart/form-data" method="post">
                                 {{ csrf_field() }}
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" value="{{ old('name') }}" required  class="form-control" name="name" placeholder="Manufacturer Name"/>
+                                    <input type="text" value="{{ old('name') }}" required  class="form-control" name="name" placeholder="Allowance Name"/>
                                     @if ($errors->has('name'))
                                         <label for="name-error" class="error"
                                                style="display: inline-block;">{{ $errors->first('name') }}</label>
                                     @endif
                                 </div>
+
+                                <!--
+                                <div class="form-group">
+                                    <label>Default</label>
+                                    <select class="form-control" name="default">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                                -->
+                                <input type="hidden" value="0" name="default"/>
                                 <div class="pull-left">
                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
                                 </div>

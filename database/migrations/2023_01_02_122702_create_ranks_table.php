@@ -14,7 +14,13 @@ class CreateRanksTable extends Migration
     public function up()
     {
         Schema::create('ranks', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->string('name', 60)->unique();
+            $table->boolean('permanent')->index()->default(true);
+            $table->integer('next_rank_id')->unsigned()->index()->default(0);
+            $table->decimal('salary', 20, 2)->default(0);
+            $table->boolean('enabled')->index()->default(true);
             $table->timestamps();
         });
     }

@@ -30,7 +30,7 @@
                                     <td>{!! $designation->enabled == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
                                     <td>
                                         @if (userCanView('department.toggle'))
-                                            @if($department->enabled == 1)
+                                            @if($designation->enabled == 1)
                                                 <a href="{{ route('designation.toggle',$designation->id) }}" class="btn btn-danger btn-sm">Disable</a>
                                             @else
                                                 <a href="{{ route('designation.toggle',$designation->id) }}" class="btn btn-success btn-sm">Enable</a>

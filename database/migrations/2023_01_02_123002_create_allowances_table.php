@@ -14,7 +14,12 @@ class CreateAllowancesTable extends Migration
     public function up()
     {
         Schema::create('allowances', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->string('name', 60)->unique();
+            $table->string('slug', 20)->nullable()->unique();
+            $table->boolean('default')->index()->default(false);
+            $table->boolean('enabled')->index()->default(true);
             $table->timestamps();
         });
     }

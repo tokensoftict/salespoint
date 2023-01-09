@@ -20,24 +20,26 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
+                                <th>Salary</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
-                            @foreach($designations as $designation)
+                            @foreach($ranks as $rank)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $designation->name }}</td>
-                                    <td>{!! $designation->enabled == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
+                                    <td>{{ $rank->name }}</td>
+                                    <td>{{ number_format($rank->salary,2) }}</td>
+                                    <td>{!! $rank->enabled == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
                                     <td>
                                         @if (userCanView('department.toggle'))
-                                            @if($designation->enabled == 1)
-                                                <a href="{{ route('designation.toggle',$designation->id) }}" class="btn btn-danger btn-sm">Disable</a>
+                                            @if($rank->enabled == 1)
+                                                <a href="{{ route('rank.toggle',$rank->id) }}" class="btn btn-danger btn-sm">Disable</a>
                                             @else
-                                                <a href="{{ route('designation.toggle',$designation->id) }}" class="btn btn-success btn-sm">Enable</a>
+                                                <a href="{{ route('rank.toggle',$rank->id) }}" class="btn btn-success btn-sm">Enable</a>
                                             @endif
                                         @endif
-                                        @if (userCanView('designation.edit'))
-                                            <a href="{{ route('designation.edit',$designation->id) }}" class="btn btn-success btn-sm">Edit</a>
+                                        @if (userCanView('rank.edit'))
+                                            <a href="{{ route('rank.edit',$rank->id) }}" class="btn btn-success btn-sm">Edit</a>
                                     @endif
                                 </tr>
                             @endforeach
@@ -53,7 +55,7 @@
                             {{ $title2 }}
                         </header>
                         <div class="panel-body">
-                            <form id="validate" action="{{ route('designation.store') }}" enctype="multipart/form-data" method="post">
+                            <form id="validate" action="{{ route('rank.store') }}" enctype="multipart/form-data" method="post">
                                 {{ csrf_field() }}
                                 <div class="form-group">
                                     <label>Name</label>
@@ -61,6 +63,14 @@
                                     @if ($errors->has('name'))
                                         <label for="name-error" class="error"
                                                style="display: inline-block;">{{ $errors->first('name') }}</label>
+                                    @endif
+                                </div>
+                                <div class="form-group">
+                                    <label>Salary</label>
+                                    <input type="number" value="{{ old('salary') }}" required  class="form-control" name="salary" placeholder="Salary"/>
+                                    @if ($errors->has('salary'))
+                                        <label for="name-error" class="error"
+                                               style="display: inline-block;">{{ $errors->first('salary') }}</label>
                                     @endif
                                 </div>
                                 <input type="hidden" name="status" value="1">

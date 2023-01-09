@@ -31,6 +31,10 @@
             placeholder: "Select a Payment Method"
         });
 
+        $(".employee_id").select2({
+            placeholder: "Select at least One Employee"
+        });
+
         // Templating
         function formatState (state) {
             if (!state.id) { return state.text; }

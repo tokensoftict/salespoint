@@ -14,7 +14,18 @@ class CreateEmployeeExtraAllowancesTable extends Migration
     public function up()
     {
         Schema::create('employee_extra_allowances', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('allowance_id')->constrained()->cascadeOnDelete();
+            $table->double('percent', 10, 2)->default(0);
+            $table->integer("tenure")->default(1);
+            $table->decimal('amount', 20, 2)->default(0);
+            $table->decimal('total_amount', 20, 2)->default(0);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->enum('status', ['0','1','2'])->default('0')->comment('0=Pending Approval, 1=Approved, 2=Completed');
+            $table->string('comment')->nullable();
             $table->timestamps();
         });
     }

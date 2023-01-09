@@ -61,7 +61,9 @@ class TaskGenerate extends Command
             'PaymentReport'=>"Payment Report",
             'Expenses'=>"Expenses Manager",
             'StockCounting' => 'Stock Counting',
-            'Deposits' => 'Deposits Manager'
+            'Deposits' => 'Deposits Manager',
+            'HR' => 'Human Resources',
+            'Payroll' => 'Payroll Periods'
         ];
 
         $taskList = DB::table('tasks')->pluck('route', 'id');

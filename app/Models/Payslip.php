@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Payslip
- * 
+ *
  * @property int $id
  * @property int $payroll_period_id
  * @property int $employee_id
@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $net_pay
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Bank|null $bank
  * @property Designation|null $designation
  * @property Employee $employee
@@ -67,6 +67,8 @@ class Payslip extends Model
 		'total_deduction',
 		'net_pay'
 	];
+
+    protected $with = ['bank','designation','employee','rank','scale','payslips_items'];
 
 	public function bank()
 	{

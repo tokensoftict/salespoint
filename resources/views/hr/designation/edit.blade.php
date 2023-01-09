@@ -10,12 +10,12 @@
                             {{ $title }}
                         </header>
                         <div class="panel-body">
-                            <form id="validate" action="{{ route('department.update',$department->id) }}" enctype="multipart/form-data" method="post">
+                            <form id="validate" action="{{ route('designation.update',$designation->id) }}" enctype="multipart/form-data" method="post">
                                 {{ csrf_field() }}
                                 {{ method_field('PUT') }}
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" value="{{ old('name', $department->name) }}" required  class="form-control" name="name" placeholder="Name"/>
+                                    <input type="text" value="{{ old('name', $designation->name) }}" required  class="form-control" name="name" placeholder="Name"/>
                                     @if ($errors->has('name'))
                                         <label for="name-error" class="error"
                                                style="display: inline-block;">{{ $errors->first('name') }}</label>

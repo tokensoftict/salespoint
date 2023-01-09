@@ -14,10 +14,12 @@ class CreatePayrollPeriodsTable extends Migration
     public function up()
     {
         Schema::create('payroll_periods', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->date('period')->unique();
             $table->integer('employee_count')->unsigned()->default(0);
             $table->enum('status', ['1', '2', '3'])->default('1')->index()->comment('1=pending, 2=approved, 3=closed');
+            $table->boolean("current")->default(1);
             $table->decimal('gross_pay', 20, 2)->default(0);
             $table->decimal('gross_deduction', 20, 2)->default(0);
             $table->decimal('net_pay', 20, 2)->default(0);

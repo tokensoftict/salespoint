@@ -21,21 +21,30 @@ class Controller extends BaseController
 
     protected function toggleState($model)
     {
-        if ($model->status == '1') return $this->disable($model);
+        if (isset($model->status) && $model->status == '1') return $this->disable($model);
+
+        if (isset($model->enabled) && $model->enabled == '1') return $this->disable($model);
 
         return $this->enable($model);
     }
 
     private function enable($model)
     {
-        $model->status = '1';
+        if(isset($model->status))  $model->status = '1';
+
+        if(isset($model->enabled))  $model->enabled = '1';
+
         $model->save();
+
         return $model;
     }
 
     private function disable($model)
     {
-        $model->status = '0';
+        if(isset($model->status)) $model->status = '0';
+
+        if(isset($model->enabled)) $model->enabled = '0';
+
         $model->save();
         return $model;
     }

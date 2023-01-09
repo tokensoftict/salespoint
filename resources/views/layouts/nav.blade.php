@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="collapse navbar-collapse" id="main-navigation">
-                <ul class="nav navbar-nav" style="font-size: 12.5px">
+                <ul class="nav navbar-nav" style="font-size: 10px;font-weight: bolder">
                   {!! getUserMenu() !!}
                 </ul>
                 </div>

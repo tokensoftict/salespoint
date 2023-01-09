@@ -12,13 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Scale
- * 
+ *
  * @property int $id
  * @property string $name
  * @property bool $enabled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Employee[] $employees
  * @property Collection|Payslip[] $payslips
  *
@@ -36,6 +36,16 @@ class Scale extends Model
 		'name',
 		'enabled'
 	];
+
+    public static $fields  = [
+        'name',
+        'enabled'
+    ];
+
+    public static $validation  = [
+        'name' => 'required'
+    ];
+
 
 	public function employees()
 	{

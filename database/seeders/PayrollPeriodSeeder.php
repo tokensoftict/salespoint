@@ -15,7 +15,7 @@ class PayrollPeriodSeeder extends Seeder
     public function run()
     {
         PayrollPeriod::create([
-            'period' => date("Y-m-d"),
+            'period' => date("Y-m-01"),
             'employee_count' => 0,
             'status' => 1,
             'gross_pay' => 0,

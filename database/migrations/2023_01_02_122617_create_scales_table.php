@@ -14,7 +14,10 @@ class CreateScalesTable extends Migration
     public function up()
     {
         Schema::create('scales', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->string('name', 60)->unique();
+            $table->boolean('enabled')->index()->default(true);
             $table->timestamps();
         });
     }

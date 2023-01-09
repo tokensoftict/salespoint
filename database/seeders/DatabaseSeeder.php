@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 
+use App\Models\PayrollPeriod;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
@@ -24,5 +25,6 @@ class DatabaseSeeder extends Seeder
        $this->call(StatusSeeder::class);
        $this->call(PaymentMethodSeeder::class);
        $this->call(UserSeeder::class);
+        $this->call(PayrollPeriod::class);
     }
 }

@@ -14,7 +14,12 @@ class CreatePayslipsItemsTable extends Migration
     public function up()
     {
         Schema::create('payslips_items', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->foreignId("payslip_id")->constrained()->cascadeOnDelete();
+            $table->morphs("payable");
+            $table->enum('item_type', ['1', '2'])->nullable()->comment('1=Allowance, 2=Deduction');
+            $table->decimal('amount', 20, 2)->default(0);
             $table->timestamps();
         });
     }

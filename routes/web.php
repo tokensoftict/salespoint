@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('ajax')->namespace('Ajax')->group(function () {
         Route::get('/findstock', ['as' => 'findstock', 'uses' => 'AjaxController@findstock']);
+        Route::get('/findemployee', ['as' => 'findemployee', 'uses' => 'AjaxController@findemployee']);
         Route::get('/findanystock', ['as' => 'findanystock', 'uses' => 'AjaxController@findanystock']);
         Route::get('/findselectstock', ['as' => 'findselectstock', 'uses' => 'AjaxController@findselectstock']);
         Route::get('/findimage', ['as' => 'findimage', 'uses' => 'AjaxController@findimage']);
@@ -422,8 +423,8 @@ Route::middleware(['auth'])->group(function () {
             });
         });
 
-
         /*
+
         Route::prefix('stockcounting')->namespace('StockCounting')->group(function () {
 
             Route::prefix('counting')->as('counting.')->group(function () {
@@ -437,9 +438,131 @@ Route::middleware(['auth'])->group(function () {
             });
 
         });
+
         */
 
+        Route::prefix('hr')->namespace('HR')->group(function () {
 
+            Route::prefix('employee')->as('employee.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'EmployeeController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'EmployeeController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'EmployeeController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'EmployeeController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'EmployeeController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'EmployeeController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'EmployeeController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'EmployeeController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'EmployeeController@destroy']);
+            });
+
+            Route::prefix('department')->as('department.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'DepartmentController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'DepartmentController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'DepartmentController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'DepartmentController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'DepartmentController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'DepartmentController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'DepartmentController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'DepartmentController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'DepartmentController@destroy']);
+            });
+
+
+            Route::prefix('designation')->as('designation.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'DesignationController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'DesignationController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'DesignationController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'DesignationController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'DesignationController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'DesignationController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'DesignationController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'DesignationController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'DesignationController@destroy']);
+            });
+
+
+            Route::prefix('rank')->as('rank.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'RankController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'RankController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'RankController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'RankController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'RankController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'RankController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'RankController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'RankController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'RankController@destroy']);
+            });
+
+
+            Route::prefix('scale')->as('scale.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'ScaleController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'ScaleController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'ScaleController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'ScaleController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'ScaleController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'ScaleController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'ScaleController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'ScaleController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'ScaleController@destroy']);
+            });
+
+
+
+        });
+
+
+        Route::prefix('payroll')->namespace('Payroll')->group(function () {
+
+            Route::prefix('periods')->as('periods.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'SalaryPeriodController@index', 'visible' => true]);
+
+                Route::match(['post','get'],'list_deduction', ['as' => 'list_deduction', 'uses' => 'SalaryPeriodController@list_deduction', 'custom_label'=>'List Extra Deduction','visible' => true]);
+
+                Route::match(['post','get'],'list_allowance', ['as' => 'list_allowance', 'uses' => 'SalaryPeriodController@list_allowance', 'custom_label'=>'List Extra Allowance','visible' => true]);
+
+
+                Route::get('{payrollPeriod}/run', ['as' => 'run', 'uses' => 'SalaryPeriodController@run_payroll', 'custom_label'=>'Run Payroll']);
+                Route::get('{payrollPeriod}/close', ['as' => 'close', 'uses' => 'SalaryPeriodController@close_payroll', 'custom_label'=>'Close Payroll']);
+                Route::get('{payrollPeriod}/approve', ['as' => 'approve', 'uses' => 'SalaryPeriodController@approve_payroll', 'custom_label'=>'Approve Payroll']);
+                Route::get('{payrollPeriod}/beneficiary', ['as' => 'beneficiary', 'uses' => 'SalaryPeriodController@beneficiary', 'custom_label'=>'Show Payroll Beneficiary']);
+                Route::get('{payrollPeriod}/xls', ['as' => 'xls', 'uses' => 'SalaryPeriodController@export_xls', 'custom_label'=>'Export Beneficiary to Excel']);
+                Route::get('{payrollPeriod}/pdf', ['as' => 'pdf', 'uses' => 'SalaryPeriodController@export_pdf', 'custom_label'=>'Export Beneficiary to PDF']);
+
+                Route::match(['post','get'],'extra_deductions', ['as' => 'extra_deductions', 'uses' => 'SalaryPeriodController@extra_deductions', 'custom_label'=>'Add Extra Deduction','visible' => true]);
+                Route::match(['post','get'],'extra_allowance', ['as' => 'extra_allowance', 'uses' => 'SalaryPeriodController@extra_allowance', 'custom_label'=>'Add Extra Allowance','visible' => true]);
+
+                Route::get('{employeeExtraAllowance}/stop_running_allowance', ['as' => 'stop_running_allowance', 'uses' => 'SalaryPeriodController@stop_running_allowance', 'custom_label'=>'Stop Running Extra Allowance']);
+
+                Route::get('{employeeExtraDeduction}/stop_running_deduction', ['as' => 'stop_running_deduction', 'uses' => 'SalaryPeriodController@stop_running_deduction', 'custom_label'=>'Stop Running Extra Deduction']);
+
+            });
+
+
+            Route::prefix('allowance')->as('allowance.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'AllowanceController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'AllowanceController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'AllowanceController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'AllowanceController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'AllowanceController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'AllowanceController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'AllowanceController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'AllowanceController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'AllowanceController@destroy']);
+            });
+
+            Route::prefix('deduction')->as('deduction.')->group(function () {
+                Route::get('', ['as' => 'index', 'uses' => 'DeductionController@index', 'visible' => true]);
+                Route::get('list', ['as' => 'list', 'uses' => 'DeductionController@listAll']);
+                Route::get('create', ['as' => 'create', 'uses' => 'DeductionController@create']);
+                Route::post('', ['as' => 'store', 'uses' => 'DeductionController@store']);
+                Route::get('{id}', ['as' => 'show', 'uses' => 'DeductionController@show']);
+                Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'DeductionController@edit']);
+                Route::get('{id}/toggle', ['as' => 'toggle', 'uses' => 'DeductionController@toggle']);
+                Route::put('{id}', ['as' => 'update', 'uses' => 'DeductionController@update']);
+                Route::delete('{id}', ['as' => 'destroy', 'uses' => 'DeductionController@destroy']);
+            });
+
+        });
 
     });
 

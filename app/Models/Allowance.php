@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Allowance
- * 
+ *
  * @property int $id
  * @property string $name
  * @property string|null $slug
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $enabled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Employee[] $employees
  *
  * @package App\Models
@@ -31,7 +31,7 @@ class Allowance extends Model
 
 	protected $casts = [
 		'default' => 'bool',
-		'enabled' => 'bool'
+		'enabled' => 'bool',
 	];
 
 	protected $fillable = [
@@ -40,6 +40,18 @@ class Allowance extends Model
 		'default',
 		'enabled'
 	];
+
+
+    public static $fields  = [
+        'name',
+        'enabled',
+        'default'
+    ];
+
+    public static $validation  = [
+        'name' => 'required'
+    ];
+
 
 	public function employees()
 	{

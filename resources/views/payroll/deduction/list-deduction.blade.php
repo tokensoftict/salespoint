@@ -24,22 +24,22 @@
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
-                            @foreach($allowances as $allowance)
+                            @foreach($deductions as $deduction)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $allowance->name }}</td>
-                                    <td>{!! $allowance->default == 1 ? label("Yes","success") : label("No","danger") !!}</td>
-                                    <td>{!! $allowance->enabled == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
+                                    <td>{{ $deduction->name }}</td>
+                                    <td>{!! $deduction->default == 1 ? label("Yes","success") : label("No","danger") !!}</td>
+                                    <td>{!! $deduction->enabled == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>
                                     <td>
-                                        @if (userCanView('allowance.toggle'))
-                                            @if($allowance->enabled == 1)
-                                                <a href="{{ route('allowance.toggle',$allowance->id) }}" class="btn btn-danger btn-sm">Disable</a>
+                                        @if (userCanView('deduction.toggle') && $deduction->default != 1)
+                                            @if($deduction->enabled == 1)
+                                                <a href="{{ route('deduction.toggle',$deduction->id) }}" class="btn btn-danger btn-sm">Disable</a>
                                             @else
-                                                <a href="{{ route('allowance.toggle',$allowance->id) }}" class="btn btn-success btn-sm">Enable</a>
+                                                <a href="{{ route('deduction.toggle',$deduction->id) }}" class="btn btn-success btn-sm">Enable</a>
                                             @endif
                                     @endif
-                                     @if (userCanView('allowance.edit'))
-                                                <a href="{{ route('allowance.edit',$allowance->id) }}" class="btn btn-success btn-sm">Edit</a>
+                                     @if (userCanView('deduction.edit') && $deduction->default != 1)
+                                                <a href="{{ route('deduction.edit',$deduction->id) }}" class="btn btn-success btn-sm">Edit</a>
                                     @endif
                                 </tr>
                             @endforeach
@@ -55,23 +55,26 @@
                             {{ $title2 }}
                         </header>
                         <div class="panel-body">
-                            <form id="validate" action="{{ route('allowance.store') }}" enctype="multipart/form-data" method="post">
+                            <form id="validate" action="{{ route('deduction.store') }}" enctype="multipart/form-data" method="post">
                                 {{ csrf_field() }}
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" value="{{ old('name') }}" required  class="form-control" name="name" placeholder="Allowance Name"/>
+                                    <input type="text" value="{{ old('name') }}" required  class="form-control" name="name" placeholder="deduction Name"/>
                                     @if ($errors->has('name'))
                                         <label for="name-error" class="error"
                                                style="display: inline-block;">{{ $errors->first('name') }}</label>
                                     @endif
                                 </div>
-                                <div class="form-group">
-                                    <label>Default</label>
-                                    <select class="form-control" name="default">
-                                        <option value="0">No</option>
-                                        <option value="1">Yes</option>
-                                    </select>
-                                </div>
+                                <!--
+                             <div class="form-group">
+                                 <label>Default</label>
+                                 <select class="form-control" name="default">
+                                     <option value="0">No</option>
+                                     <option value="1">Yes</option>
+                                 </select>
+                             </div>
+                             -->
+                                <input type="hidden" value="0" name="default"/>
                                 <div class="pull-left">
                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
                                 </div>

@@ -20,7 +20,7 @@
                 <section class="panel">
                     <header class="panel-heading">
                         {{ $title }}
-
+                        <x-store-selector/>
                         <form action=""  class="tools pull-right" style="margin-right: 80px" method="post">
                             {{ csrf_field() }}
                             <div class="row">
@@ -62,7 +62,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $payment->customer->firstname }} {{ $payment->customer->lastname }}</td>
                                         <td>{{ $payment->warehousestore->name }}</td>
-                                        <td>{{ $payment->invoice->invoice_paper_number }}</td>
+                                        <td>{{ $payment->invoice->invoice_paper_number ?? "" }}</td>
                                         <td>{{ number_format($payment->subtotal,2) }}</td>
                                         <td>{{ number_format($payment->total_paid,2) }}</td>
                                         <td>{{ date("h:i a",strtotime($payment->payment_time)) }}</td>

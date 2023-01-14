@@ -13,7 +13,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class Task
- * 
+ *
  * @property int $id
  * @property int $module_id
  * @property int $parent_task_id
@@ -26,7 +26,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string|null $icon
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Module $module
  * @property Collection|Permission[] $permissions
  *
@@ -57,6 +57,8 @@ class Task extends Model
 		'order',
 		'icon'
 	];
+
+    protected $with = ['module'];
 
 	public function module()
 	{

@@ -12,7 +12,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class CreditPaymentLog
- * 
+ *
  * @property int $id
  * @property int $payment_id
  * @property int|null $user_id
@@ -24,7 +24,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property Carbon $payment_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Customer|null $customer
  * @property Invoice|null $invoice
  * @property Payment $payment
@@ -63,6 +63,11 @@ class CreditPaymentLog extends Model
 		'amount',
 		'payment_date'
 	];
+
+    public function getInvoicePaperNumberAttribute()
+    {
+        return "CREDIT-PAYMENT-".$this->deposit_number;
+    }
 
 	public function customer()
 	{

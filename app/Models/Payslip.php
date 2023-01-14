@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $account_no
  * @property float $gross_pay
  * @property float $total_deduction
+ * @property float $total_allowance
  * @property float $net_pay
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -51,6 +52,7 @@ class Payslip extends Model
 		'bank_id' => 'int',
 		'gross_pay' => 'float',
 		'total_deduction' => 'float',
+        'total_allowance' => 'float',
 		'net_pay' => 'float'
 	];
 
@@ -65,6 +67,7 @@ class Payslip extends Model
 		'account_no',
 		'gross_pay',
 		'total_deduction',
+        'total_allowance',
 		'net_pay'
 	];
 

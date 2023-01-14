@@ -14,14 +14,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class Group
- * 
+ *
  * @property int $id
  * @property string $name
  * @property bool $status
  * @property string|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Permission[] $permissions
  * @property Collection|User[] $users
  *
@@ -33,6 +33,8 @@ class Group extends Model
 
     use LogsActivity;
 
+    protected $with = ['tasks'];
+
 	protected $table = 'groups';
 
 	protected $casts = [
@@ -43,6 +45,7 @@ class Group extends Model
 		'name',
 		'status'
 	];
+
 
 	public function permissions()
 	{

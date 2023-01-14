@@ -117,8 +117,8 @@ class Employee extends Model
     public static $validation  = [
         'surname' => 'required',
         'other_names' => 'required',
-        'salary' => 'required',
-        'gender' => 'required',
+        //'salary' => 'required',
+        //'gender' => 'required',
     ];
 
     protected $appends = ['image','name'];
@@ -131,11 +131,11 @@ class Employee extends Model
 
     public function getSalaryAttribute()
     {
-        if($this->attributes['salary'] !== NULL) return $this->attributes['salary'];
+        if(isset($this->attributes['salary']) && $this->attributes['salary'] !== NULL) return $this->attributes['salary'];
 
-        if($this->scale_id) return $this->scale()->salary;
+        if(isset($this->rank_id) && $this->rank_id !== NULL) return $this->rank->salary;
 
-        return 0;
+        return "";
     }
 
 

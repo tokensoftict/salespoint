@@ -144,7 +144,7 @@ class CustomerController extends Controller
             $payment = Payment::create([
                 'user_id' => auth()->id(),
                 'customer_id' => $request->customer_id,
-                'invoice_number' => "CREDIT-PAYMENT",
+                'invoice_number' => time(),
                 'invoice_id' => 0,
                 'invoice_type'=>"App\\Models\\CreditPaymentLog",
                 'warehousestore_id' => getActiveStore()->id,
@@ -159,6 +159,7 @@ class CustomerController extends Controller
                     'user_id' => auth()->id(),
                     'customer_id' => $request->customer_id,
                     'payment_method_id' =>$request->payment_method,
+                     'bank_account_id' => $request->bank ?? NULL,
                     'invoice_id' => 0,
                     'invoice_type'=>"App\\Models\\CreditPaymentLog",
                     'warehousestore_id' => getActiveStore()->id,

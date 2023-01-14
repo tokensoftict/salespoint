@@ -89,7 +89,7 @@ class ExpensesController extends Controller
         return setPageContent('expenses.list_by_type',$data);
     }
 
-
+/*
     public function expenses_report_by_department(Request $request){
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
@@ -107,5 +107,5 @@ class ExpensesController extends Controller
         $data['expenses'] = Expense::with(['expenses_type','user'])->where('department', $data['department'])->whereBetween('expense_date',[ $data['from'], $data['to']])->get();
         return setPageContent('expenses.list_department',$data);
     }
-
+*/
 }

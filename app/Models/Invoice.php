@@ -67,7 +67,8 @@ class Invoice extends Model
         'vat_amount' => 'float',
         'created_by' => 'int',
         'last_updated_by' => 'int',
-        'voided_by' => 'int'
+        'voided_by' => 'int',
+        'is_approve' => 'boolean'
     ];
 
     protected $dates = [
@@ -101,7 +102,8 @@ class Invoice extends Model
         'sales_time',
         'void_reason',
         'date_voided',
-        'void_time'
+        'void_time',
+        'is_approve'
     ];
 
     public function created_by()
@@ -165,6 +167,40 @@ class Invoice extends Model
         });
     }
 
+
+    public function approveInvoice()
+    {
+        $this->is_approve = 1;
+        $this->status ="APPROVED";
+        $this->update();
+    }
+
+    public function declineInvoice()
+    {
+        $this->is_approve = 0;
+        $this->status ="DELETED";
+        $this->update();
+
+        foreach ($this->invoice_item_batches()->get() as $invoice_batch){
+            $batch = $invoice_batch->stockbatch;
+            $batch->{$invoice_batch->store} += $invoice_batch->quantity;
+            $batch->update();
+        }
+
+    }
+
+
+    public function destroyInvoice()
+    {
+        $this->declineInvoice();
+        if($this->payment_id != NULL)
+        {
+            $id = $this->payment_id;
+            $this->payment_id = NULL;
+            $this->update();
+            Payment::find($id)->delete();
+        }
+    }
 
 
     public static function updateInvoice($request, $reports, $invoice){
@@ -260,7 +296,7 @@ class Invoice extends Model
         return $invoice;
 
     }
-  public static function validateInvoiceUpdateProduct($products,$store, $invoice)
+    public static function validateInvoiceUpdateProduct($products,$store, $invoice)
     {
 
         $returnLogs = [];
@@ -332,9 +368,11 @@ class Invoice extends Model
         }
 
         $status = false;
+
         $report = [];
         $errors = [];
         $prods = [];
+        $below_cost_price = [];
 
         $product_ids =  array_column($products,'id');
 
@@ -350,6 +388,15 @@ class Invoice extends Model
                 $status = true;
                 $errors[$stock->id] = "Not enough quantity to process ".$stock->name;
             }
+            if($prods[$stock->id]['price'] <=  $stock->cost_price)
+            {
+                $below_cost_price[] = [
+                    'name' => $stock->name,
+                    'cost_price' =>$stock->cost_price,
+                    'selling_price' => $prods[$stock->id]['price']
+                ];
+            }
+
             $report[$stock->id]['batches'] =  $batches;
             $report[$stock->id]['stock'] = $stock;
             $report[$stock->id]['prods'] = $prods[$stock->id];
@@ -363,7 +410,7 @@ class Invoice extends Model
             }
         }
 
-        return ['status'=> $status, 'data'=>$report,'errors'=> $errors,'returnLogs'=>$returnLogs];
+        return ['status'=> $status, 'data'=>$report,'errors'=> $errors,'returnLogs'=>$returnLogs,"below_cost_price"=>$below_cost_price];
 
     }
 
@@ -393,6 +440,7 @@ class Invoice extends Model
             'last_updated_by' =>auth()->id(),
             'invoice_date' =>  $request->get('date'),
             'sales_time' =>Carbon::now()->toTimeString(),
+            'is_approve' => $request->get('status') == "REQUIRED-APPROVAL" ? 1 : 0
         ];
 
         $invoice = Invoice::create($invoice_data);
@@ -435,6 +483,7 @@ class Invoice extends Model
         $report = [];
         $errors = [];
         $prods = [];
+        $below_cost_price = [];
 
         $product_ids =  array_column($products,'id');
 
@@ -450,15 +499,90 @@ class Invoice extends Model
                 $status = true;
                 $errors[$stock->id] = "Not enough quantity to process ".$stock->name;
             }
+            //echo $stock->cost_price ."<=". $prods[$stock->id]['price'];
+            if($prods[$stock->id]['price'] <=  $stock->cost_price)
+            {
+                $below_cost_price[] = [
+                    'name' => $stock->name,
+                    'cost_price' =>$stock->cost_price,
+                    'selling_price' => $prods[$stock->id]['price']
+                ];
+            }
+
             $report[$stock->id]['batches'] =  $batches;
             $report[$stock->id]['stock'] = $stock;
             $report[$stock->id]['prods'] = $prods[$stock->id];
         }
 
-        return ['status'=> $status, 'data'=>$report,'errors'=> $errors];
+        return ['status'=> $status, 'data'=>$report,'errors'=> $errors, "below_cost_price"=>$below_cost_price];
 
     }
 
+
+    public static function validateDepositPaymentApprovedPayNowUsage($invoice)
+    {
+
+        $deposit_used = 0;
+
+        $paymentInformation =  (is_array(request()->get('payment')) ? request()->get('payment') : json_decode(request()->get('payment'),true));
+
+        if(isset($paymentInformation['payment_method_id']) && $paymentInformation['payment_method_id'] == "split_method")
+        {
+            foreach($paymentInformation['split_method'] as $pmthod=>$amount) {
+
+                if ($pmthod == 5 && $amount > 0) {
+                    if ($invoice->customer_id == 1) return ['status' => true, 'errors' => "Please select a customer for payment with deposit"];
+
+                    $customer = $invoice->customer;
+
+                    if(!$customer)
+                    {
+                        return ['status'=>true,'errors'=>"Please select a valid customer for payment with deposit"];
+                        break;
+                    }
+
+                    if(($customer->deposit_balance + $deposit_used) < $amount)
+                    {
+                        return ['status'=>true,'errors'=>"Insufficient deposit amount, please add more deposit to complete this transaction"];
+                        break;
+                    }
+
+                }
+            }
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            Payment::where('invoice_id',$invoice->id)->where('invoice_type',CustomerDepositsHistory::class)->delete();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
+
+
+        if(isset($paymentInformation['payment_method_id']) && $paymentInformation['payment_method_id'] == 5)
+        {
+            $totals = [
+                'total_invoice_total_selling'=>$invoice->sub_total,
+                'total_invoice_total_cost' =>$invoice->total_cost,
+                'total_invoice_total_profit' =>$invoice->total_profit
+            ];
+
+            if($invoice->customer_id == "1")
+            {
+                return ['status'=>true,'errors'=>"Please select a customer for payment with deposit"];
+
+            }
+
+            if(($invoice->customer->deposit_balance + $deposit_used) <  $totals['total_invoice_total_selling'])
+            {
+                return ['status'=>true,'errors'=>"Insufficient deposit amount, please add more deposit to complete this transaction"];
+            }
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            Payment::where('invoice_id',$invoice->id)->where('invoice_type',CustomerDepositsHistory::class)->delete();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        }
+
+        return true;
+    }
 
     public static function validateDepositPaymentUsage($validateInvoiceProductReport,$id=0)
     {
@@ -467,22 +591,23 @@ class Invoice extends Model
         if($id!=0)
         {
 
-           $deposit__ = PaymentMethodTable::where('invoice_id',$id)->where('invoice_type',CustomerDepositsHistory::class)->get();
+            $deposit__ = PaymentMethodTable::where('invoice_id',$id)->where('invoice_type',CustomerDepositsHistory::class)->get();
 
-           if($deposit__->count() > 0)
-           {
-               $deposit_used = $deposit__->sum('amount');
-           }
+            if($deposit__->count() > 0)
+            {
+                $deposit_used = $deposit__->sum('amount');
+            }
 
         }
 
-        $paymentInformation = request()->get('payment'); //json_decode(request()->get('payment'),true);
 
+        $paymentInformation =  (is_array(request()->get('payment')) ? request()->get('payment') : json_decode(request()->get('payment'),true));
+        //request()->get('payment');
         if(isset($paymentInformation['payment_method_id']) && $paymentInformation['payment_method_id'] == "split_method")
         {
             foreach($paymentInformation['split_method'] as $pmthod=>$amount){
 
-                if($pmthod == 5)
+                if ($pmthod == 5 && $amount > 0)
                 {
                     //check if the customer has enough deposit for the transaction
 

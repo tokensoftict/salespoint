@@ -23,7 +23,7 @@ class WarehouseSeeder extends Seeder
             'status'=>1
         ]);
 
-        getActiveStore(true);
+        //getActiveStore(true);
 
     }
 }

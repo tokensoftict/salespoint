@@ -25,6 +25,6 @@ class DatabaseSeeder extends Seeder
        $this->call(StatusSeeder::class);
        $this->call(PaymentMethodSeeder::class);
        $this->call(UserSeeder::class);
-        $this->call(PayrollPeriod::class);
+        $this->call(PayrollPeriodSeeder::class);
     }
 }

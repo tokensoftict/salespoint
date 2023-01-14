@@ -20,6 +20,7 @@ class CreatePaymentMethodTableTable extends Migration
             $table->foreignId("customer_id")->nullable()->constrained()->nullOnDelete();
             $table->foreignId("payment_id")->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('warehousestore_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('bank_account_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('department')->default('STORE');
             $table->unsignedBigInteger("payment_method_id")->nullable();
             $table->morphs('invoice');

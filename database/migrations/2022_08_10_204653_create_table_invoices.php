@@ -30,6 +30,7 @@ class CreateTableInvoices extends Migration
             $table->decimal("total_cost",20,5);
             $table->decimal("vat",20,5);
             $table->decimal("vat_amount",20,5);
+            $table->boolean("is_approve")->default(1);
             $table->unsignedBigInteger("created_by")->nullable();
             $table->unsignedBigInteger("last_updated_by")->nullable();
             $table->unsignedBigInteger("voided_by")->nullable();

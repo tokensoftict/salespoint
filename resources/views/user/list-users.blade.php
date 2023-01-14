@@ -23,6 +23,7 @@
                                     @if(config('app.store')  == "hotel")
                                     <th>Department</th>
                                     @endif
+                                    <th>Store</th>
                                     <th>Username</th>
                                     <th>Group</th>
                                     <th>Status</th>
@@ -41,6 +42,7 @@
                                             @if(config('app.store')  == "hotel")
                                             <td>{{ $user->department }}</td>
                                             @endif
+                                            <td>{{ $user->warehousestore->name ?? "" }}</td>
                                             <td>{{ $user->username }}</td>
                                             <td>{{ $user->group->name }}</td>
                                             <td>{!! $user->status == 1 ? label("Active","success") : label("Inactive","danger") !!}</td>

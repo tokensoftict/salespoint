@@ -17,7 +17,8 @@ use PDF;
 class InvoiceReportController extends Controller
 {
 
-    public function daily(Request $request){
+    public function daily(Request $request)
+    {
         if($request->get('date')){
             $data['date'] = $request->get('date');
             $data['status'] = $request->get('status');
@@ -30,7 +31,8 @@ class InvoiceReportController extends Controller
         return setPageContent('invoicereport.daily',$data);
     }
 
-    public function monthly(Request $request){
+    public function monthly(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');
@@ -46,7 +48,8 @@ class InvoiceReportController extends Controller
     }
 
 
-    public function customer_monthly(Request $request){
+    public function customer_monthly(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');
@@ -65,7 +68,8 @@ class InvoiceReportController extends Controller
     }
 
 
-    public function user_monthly(Request $request){
+    public function user_monthly(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');
@@ -85,7 +89,8 @@ class InvoiceReportController extends Controller
 
 
 
-    public function sales_rep_monthly(Request $request){
+    public function sales_rep_monthly(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');
@@ -105,7 +110,8 @@ class InvoiceReportController extends Controller
 
 
 
-    public function product_monthly(Request $request){
+    public function product_monthly(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');
@@ -133,7 +139,8 @@ class InvoiceReportController extends Controller
     }
 
 
-    public function sales_analysis(Request $request){
+    public function sales_analysis(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');
@@ -166,7 +173,8 @@ class InvoiceReportController extends Controller
     }
 
 
-    public function return_logs(Request $request){
+    public function return_logs(Request $request)
+    {
         if($request->get('from') && $request->get('to')){
             $data['from'] = $request->get('from');
             $data['to'] = $request->get('to');

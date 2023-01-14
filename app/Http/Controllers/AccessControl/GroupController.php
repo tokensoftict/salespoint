@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+
 
 
 class GroupController extends Controller
@@ -106,7 +108,7 @@ class GroupController extends Controller
             }
         }
 
-        $group = Group::find($id);
+        $group = Group::with(['users'])->find($id);
 
         //---- get all modules and tasks that belong to a group and that have been assigned too.
         $modules = Module::where('status', '=', '1')
@@ -118,6 +120,9 @@ class GroupController extends Controller
         $data['title'] = "Assign Privileges to User Group (" . $group->name . ")";
         $data['modules'] = $modules;
         $data['group'] = $group;
+
+
+
         return setPageContent('access-control.permission-user-group', $data);
     }
 
@@ -141,6 +146,11 @@ class GroupController extends Controller
         $values = [];
         foreach($data['privileges'] as $key => $val){
             array_push($values,$key);
+        }
+        foreach ($group->users as $user)
+        {
+            Cache::forget("'route-task-permission-".$user->id);
+            loadUserMenu($user->id); // refresh cache for all users under the group.
         }
         return $group->group_tasks()->sync($values);
     }

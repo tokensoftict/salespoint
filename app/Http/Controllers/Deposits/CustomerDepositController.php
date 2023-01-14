@@ -27,7 +27,7 @@ class CustomerDepositController extends Controller
     public function create(){
         $data['title'] = "New Deposit";
         $data['deposit'] = new CustomerDepositsHistory();
-        $data['customers'] = Customer::select('id','firstname','lastname')->get();
+        $data['customers'] = Customer::select('id','firstname','lastname')->where("id",">",2)->get();
         $data['payments'] = PaymentMethod::where('status',1)->where('id','<>',4)->get();
         $data['banks'] = BankAccount::all();
         return setPageContent('deposit.new',$data);
@@ -41,7 +41,6 @@ class CustomerDepositController extends Controller
         $data = $request->only(CustomerDepositsHistory::$fields);
 
         $data['user_id'] = auth()->id();
-
         CustomerDepositsHistory::create($data);
 
         return redirect()->route('deposits.index')->with('success','Deposit as been saved successful!');
@@ -54,7 +53,7 @@ class CustomerDepositController extends Controller
 
         $data['deposit'] = CustomerDepositsHistory::findorfail($id);
 
-        $data['customers'] = Customer::select('id','firstname','lastname')->get();
+        $data['customers'] = Customer::select('id','firstname','lastname')->where("id",">",2)->get();
 
         $data['payments'] = PaymentMethod::where('status',1)->where('id','<>',4)->get();
 

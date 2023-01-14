@@ -219,12 +219,14 @@ Route::middleware(['auth'])->group(function () {
 
             Route::prefix('stock')->as('stock.')->group(function () {
                 Route::get('', ['as' => 'index', 'uses' => 'StockController@index', 'visible' => true]);
+                Route::get('create', ['as' => 'create', 'uses' => 'StockController@create','visible' => true,"custom_label"=>"New Stock"]);
                 Route::get('available', ['as' => 'available', 'uses' => 'StockController@available','visible' => true]);
+                Route::get('available_custom/{warehousestore}', ['as' => 'available_custom', 'uses' => 'StockController@available',"custom_label"=>"View Available Stock in other Stores"]);
                 Route::get('expired', ['as' => 'expired', 'uses' => 'StockController@expired','visible' => true]);
                 Route::get('disable', ['as' => 'disable', 'uses' => 'StockController@disabled','visible' => true]);
                 Route::match(['post','get'],'conversion', ['as' => 'convert', 'uses' => 'StockController@conversion_of','visible' => true]);
                 Route::get('export', ['as' => 'export', 'uses' => 'StockController@export']);
-                Route::get('create', ['as' => 'create', 'uses' => 'StockController@create']);
+
                 Route::post('', ['as' => 'store', 'uses' => 'StockController@store']);
                 Route::get('{id}/show', ['as' => 'show', 'uses' => 'StockController@show']);
                 Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'StockController@edit']);
@@ -269,6 +271,10 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('create', ['as' => 'create', 'uses' => 'InvoiceController@create']);
                 Route::get('draft', ['as' => 'draft', 'uses' => 'InvoiceController@draft', 'visible' => true]);
                 Route::get('paid', ['as' => 'paid', 'uses' => 'InvoiceController@paid', 'visible' => true]);
+                Route::get('approved', ['as' => 'approved', 'uses' => 'InvoiceController@approved', 'visible' => true]);
+                Route::get('{invoice}/approve', ['as' => 'approve', 'uses' => 'InvoiceController@approve', "custom_label"=>"Approve Below Cost Price Invoice"]);
+                Route::get('{invoice}/decline', ['as' => 'decline', 'uses' => 'InvoiceController@decline', "custom_label"=>"Decline Below Cost Price Invoice"]);
+                Route::get('waiting_approval', ['as' => 'waiting_approval', 'uses' => 'InvoiceController@waiting_approval', 'visible' => true,"custom_label"=>"Waiting for Approval Invoice"]);
                 Route::get('{id}/pos_print', ['as' => 'pos_print', 'uses' => 'InvoiceController@print_pos' ]);
                 Route::get('{id}/print_afour', ['as' => 'print_afour', 'uses' => 'InvoiceController@print_afour']);
                 Route::get('{id}/print_way_bill', ['as' => 'print_way_bill', 'uses' => 'InvoiceController@print_way_bill']);
@@ -276,14 +282,13 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{id}/edit', ['as' => 'edit', 'uses' => 'InvoiceController@edit']);
                 Route::get('{id}/destroy', ['as' => 'destroy', 'uses' => 'InvoiceController@destroy']);
                 Route::put('{id}/update', ['as' => 'update', 'uses' => 'InvoiceController@update']);
-                /*
+                Route::get('{invoice}/send_draft_invoice', ['as' => 'send_draft_invoice', 'uses' => 'InvoiceController@send_draft_invoice',"custom_label"=>"Send Invoice Back to Draft From Approved / Pending-Approval"]);
                 Route::get('/return_invoice', ['as' => 'return_invoice', 'uses' => 'InvoiceController@return_invoice', 'visible' => true, 'custom_label'=>'Return Invoice']);
-                */
                 Route::post('/add_return_invoice', ['as' => 'add_return_invoice', 'uses' => 'InvoiceController@add_return_invoice',  'custom_label'=>'Create Return Invoice']);
 
                 Route::get('draft_invoice', ['as' => 'draft_invoice', 'uses' => 'InvoiceController@draft_invoice','custom_label'=>'Save Invoice to Draft']);
                 Route::get('complete_invoice', ['as' => 'complete_invoice', 'uses' => 'InvoiceController@complete_invoice','custom_label'=>'Save Invoice to Complete']);
-                Route::post('{id}/complete_invoice_no_edit', ['as' => 'complete_invoice_no_edit', 'uses' => 'InvoiceController@complete_invoice_no_edit','custom_label'=>'Complete / Pay Invoice from view invoice page']);
+                Route::post('{invoice}/complete_invoice_no_edit', ['as' => 'complete_invoice_no_edit', 'uses' => 'InvoiceController@complete_invoice_no_edit','custom_label'=>'Complete / Pay Invoice from view invoice page']);
             });
 
             Route::prefix('cashbook')->as('cashbook.')->group(function () {
@@ -346,6 +351,7 @@ Route::middleware(['auth'])->group(function () {
             Route::match(['get','post'],'income_analysis_by_department', ['as' => 'income_analysis_by_department', 'uses' => 'PaymentReportController@income_analysis_by_department', 'visible' => true,'custom_label'=>'Income Analysis By Depart.']);
             Route::match(['get','post'],'monthly_payment_reports_by_customer', ['as' => 'monthly_payment_reports_by_customer', 'uses' => 'PaymentReportController@monthly_payment_reports_by_customer', 'visible' => true,'custom_label'=>'Monthly Report By Customer']);
             Route::match(['get','post'],'monthly_payment_report_by_method_by_customer', ['as' => 'monthly_payment_report_by_method_by_customer', 'uses' => 'PaymentReportController@monthly_payment_report_by_method_by_customer', 'visible' => true,'custom_label'=>'Monthly Report By Customer and Method']);
+            Route::match(['get','post'],'monthly_payment_report_by_method_by_bank', ['as' => 'monthly_payment_report_by_method_by_bank', 'uses' => 'PaymentReportController@monthly_payment_report_by_method_by_bank', 'visible' => true,'custom_label'=>'Monthly Report By Bank and Method']);
 
         });
         if(config('app.store') == "hotel") {
@@ -516,9 +522,9 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('periods')->as('periods.')->group(function () {
                 Route::get('', ['as' => 'index', 'uses' => 'SalaryPeriodController@index', 'visible' => true]);
 
-                Route::match(['post','get'],'list_deduction', ['as' => 'list_deduction', 'uses' => 'SalaryPeriodController@list_deduction', 'custom_label'=>'List Extra Deduction','visible' => true]);
+                Route::match(['post','get'],'list_deduction', ['as' => 'list_deduction', 'uses' => 'SalaryPeriodController@list_deduction', 'custom_label'=>'List Payroll Deduction','visible' => true]);
 
-                Route::match(['post','get'],'list_allowance', ['as' => 'list_allowance', 'uses' => 'SalaryPeriodController@list_allowance', 'custom_label'=>'List Extra Allowance','visible' => true]);
+                Route::match(['post','get'],'list_allowance', ['as' => 'list_allowance', 'uses' => 'SalaryPeriodController@list_allowance', 'custom_label'=>'List Payroll Allowance','visible' => true]);
 
 
                 Route::get('{payrollPeriod}/run', ['as' => 'run', 'uses' => 'SalaryPeriodController@run_payroll', 'custom_label'=>'Run Payroll']);
@@ -528,8 +534,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{payrollPeriod}/xls', ['as' => 'xls', 'uses' => 'SalaryPeriodController@export_xls', 'custom_label'=>'Export Beneficiary to Excel']);
                 Route::get('{payrollPeriod}/pdf', ['as' => 'pdf', 'uses' => 'SalaryPeriodController@export_pdf', 'custom_label'=>'Export Beneficiary to PDF']);
 
-                Route::match(['post','get'],'extra_deductions', ['as' => 'extra_deductions', 'uses' => 'SalaryPeriodController@extra_deductions', 'custom_label'=>'Add Extra Deduction','visible' => true]);
-                Route::match(['post','get'],'extra_allowance', ['as' => 'extra_allowance', 'uses' => 'SalaryPeriodController@extra_allowance', 'custom_label'=>'Add Extra Allowance','visible' => true]);
+                Route::match(['post','get'],'extra_deductions', ['as' => 'extra_deductions', 'uses' => 'SalaryPeriodController@extra_deductions', 'custom_label'=>'Add Payroll Deduction','visible' => true]);
+                Route::match(['post','get'],'extra_allowance', ['as' => 'extra_allowance', 'uses' => 'SalaryPeriodController@extra_allowance', 'custom_label'=>'Add Payroll Allowance','visible' => true]);
 
                 Route::get('{employeeExtraAllowance}/stop_running_allowance', ['as' => 'stop_running_allowance', 'uses' => 'SalaryPeriodController@stop_running_allowance', 'custom_label'=>'Stop Running Extra Allowance']);
 

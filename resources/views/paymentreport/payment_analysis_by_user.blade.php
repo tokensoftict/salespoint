@@ -20,7 +20,7 @@
                 <section class="panel">
                     <header class="panel-heading">
                         {{ $title }}
-
+                        <x-store-selector/>
                         <form action=""  class="tools pull-right" style="margin-right: 80px" method="post">
                             {{ csrf_field() }}
                             <div class="row">
@@ -46,6 +46,7 @@
                     <div class="panel-body">
                         @php
                             $all_total=0;
+                            $total_credit =0;
                         @endphp
                         @foreach($payment_methods as $payment_method)
 
@@ -68,23 +69,24 @@
                                 @php
                                     $total=0;
                                 @endphp
-                                    @foreach(\App\Models\PaymentMethodTable::where('payment_method_id',$payment_method->id)->where('user_id',$customer)->where('payment_date',$date)->get() as $payment)
-                                        @php
-                                            $total+=$payment->amount;
-                                            $all_total+=$payment->amount;
-                                        @endphp
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $payment->customer->firstname }} {{ $payment->customer->lastname }}</td>
-                                            <td>{{ $payment->warehousestore->name }}</td>
-                                            <td>{{ $payment->payment_method->name }}</td>
-                                            <td>{{ $payment->invoice->invoice_paper_number }}</td>
-                                            <td>{{ number_format($payment->amount,2) }}</td>
-                                            <td>{{ number_format($payment->amount,2) }}</td>
-                                            <td>{{ date("h:i a",strtotime($payment->payment->payment_time)) }}</td>
-                                            <td>{{ convert_date($payment->payment->payment_date) }}</td>
-                                        </tr>
-                                    @endforeach
+                                @foreach(\App\Models\PaymentMethodTable::where('payment_method_id',$payment_method->id)->where('user_id',$customer)->where('payment_date',$date)->where('warehousestore_id',getActiveStore()->id)->get() as $payment)
+                                    @php
+                                        $total+=$payment->amount;
+                                        $all_total+=$payment->amount;
+                                        if($payment_method->id == 4) $total_credit+=$payment->amount;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $payment->customer->firstname }} {{ $payment->customer->lastname }}</td>
+                                        <td>{{ $payment->warehousestore->name }}</td>
+                                        <td>{{ $payment->payment_method->name }}</td>
+                                        <td>{{ $payment->invoice->invoice_paper_number ?? "" }}</td>
+                                        <td>{{ number_format($payment->amount,2) }}</td>
+                                        <td>{{ number_format($payment->amount,2) }}</td>
+                                        <td>{{ date("h:i a",strtotime($payment->payment->payment_time)) }}</td>
+                                        <td>{{ convert_date($payment->payment->payment_date) }}</td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                                 <tfoot>
                                 <tr>
@@ -101,7 +103,20 @@
                                 </tfoot>
                             </table>
                         @endforeach
-                        <h2 class="pull-right">Grand Total : {{ number_format($all_total,2) }}</h2>
+                        <table class="table">
+                            <tr>
+                                <th> <h2 class="pull-right">Total Payment : {{ number_format($all_total,2) }}</h2></th>
+                            </tr>
+                            <tr>
+                                <th> <h2 class="pull-right">Total Credit Payment : -{{ number_format($total_credit,2) }}</h2></th>
+                            </tr>
+                            <tr>
+                                <th> <h2 class="pull-right">Grand Total : {{number_format(($all_total - $total_credit),2) }}</h2></th>
+                            </tr>
+                        </table>
+
+
+
                     </div>
                 </section>
 

@@ -124,6 +124,8 @@ class PayrollPeriod extends Model
 
                 $employee_total_allowance = 0;
 
+                $employee_extra_total_allowance = 0;
+
                 $employee_allowance = [];
 
                 $employee_allowance[] =  new PayslipsItem(
@@ -135,12 +137,12 @@ class PayrollPeriod extends Model
                     ]
                 );
 
-                $employee_total_allowance+=$employee->salary;
+                $employee_total_allowance+=($employee->salary == "" ? 0 : $employee->salary);
 
                 foreach ($employee->activeAllowances as $extra_allowance)
                 {
                     $employee_total_allowance += $extra_allowance->pivot->amount;
-
+                    $employee_extra_total_allowance +=$extra_allowance->pivot->amount;
                     $employee_allowance[] =  new PayslipsItem(
                         [
                             'payable_type' => EmployeeExtraAllowance::class,
@@ -185,6 +187,7 @@ class PayrollPeriod extends Model
                     'account_no' => $employee->bank_account_no,
                     'gross_pay' =>  $employee_total_allowance,
                     'total_deduction' => -$employee_total_deduction,
+                    'total_allowance' => $employee_extra_total_allowance,
                     'net_pay' => ($employee_total_allowance - $employee_total_deduction)
                 ]);
 

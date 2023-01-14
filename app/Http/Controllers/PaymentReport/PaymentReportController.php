@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PaymentReport;
 
 use App\Http\Controllers\Controller;
+use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\Expense;
 use App\Models\Payment;
@@ -103,6 +104,27 @@ class PaymentReportController extends Controller
     }
 
 
+    public function monthly_payment_report_by_method_by_bank(Request $request)
+    {
+        if($request->get('from') && $request->get('to')){
+            $data['from'] = $request->get('from');
+            $data['to'] = $request->get('to');
+            $data['payment_method'] = $request->get('payment_method');
+            $data['bank'] = $request->get('customer');
+        }else{
+            $data['from'] = date('Y-m-01');
+            $data['to'] = date('Y-m-t');
+            $data['payment_method'] = 2;
+            $data['bank'] = 1;
+        }
+        $data['payments'] = PaymentMethodTable::with(['warehousestore','payment','customer','user','payment_method','invoice','bankAccount','bankAccount.bank'])->where('bank_account_id', $data['bank'])->where('payment_method_id', $data['payment_method'])->where('warehousestore_id',getActiveStore()->id)->whereBetween('payment_date', [$data['from'],$data['to']])->orderBy('id','DESC')->get();
+        $data['title'] = "Monthly Payment Report By Bank And Payment Method";
+        $data['pmthods'] = PaymentMethod::whereIn("id",[2,3])->get();
+        $data['banks'] =BankAccount::all();
+        return setPageContent('paymentreport.monthly_payment_report_by_method_by_bank',$data);
+    }
+
+
 
     public function payment_analysis(Request $request)
     {
@@ -128,7 +150,7 @@ class PaymentReportController extends Controller
             $data['customer'] = $request->customer;
         }else{
             $data['date'] = dailyDate();
-            $data['customer'] =  $data['customers']->first()->id;
+            $data['customer'] = $data['customers']->first()->id ?? 1;
         }
         $data['title'] = "Payment Analysis";
 

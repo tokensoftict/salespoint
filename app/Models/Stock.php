@@ -196,7 +196,10 @@ class Stock extends Model
     {
         if(!$this->stockBatches()->exists()) return 0;
 
-        $store = Warehousestore::find($store_id);
+        if(is_numeric($store_id))
+            $store = Warehousestore::find($store_id);
+        else
+            $store = $store_id;
 
         return $this->stockBatches()->where($store->packed_column, ">", "0")->sum($store->packed_column);
     }
@@ -205,10 +208,15 @@ class Stock extends Model
     {
         if(!$this->stockBatches()->exists()) return 0;
 
-        $store = Warehousestore::find($store_id);
+        if(is_numeric($store_id))
+            $store = Warehousestore::find($store_id);
+        else
+            $store = $store_id;
 
         return $this->stockBatches()->where($store->yard_column, ">", "0")->sum($store->yard_column);
     }
+
+
 
     public function getAvailableQuantityAttribute(){
         if(!$this->stockBatches()->exists()) return 0;

@@ -25,8 +25,9 @@ class PayrollPeriodExport implements FromCollection, WithHeadings
         {
             $beneficieries[] = array(
                 $payslip->employee->employee_no,
-                $payslip->employee->name,
-                $payslip->scale->name,
+                $payslip->employee->name ?? "",
+                $payslip->rank->name ?? "",
+                $payslip->total_allowance,
                 $payslip->gross_pay,
                 $payslip->total_deduction,
                 $payslip->net_pay,
@@ -44,7 +45,8 @@ class PayrollPeriodExport implements FromCollection, WithHeadings
         return [
             'Employee No',
             'Name',
-            'Scale',
+            'Rank',
+            'Total Allowance',
             'Gross Pay',
             'Total Deduction',
             'Net Pay',

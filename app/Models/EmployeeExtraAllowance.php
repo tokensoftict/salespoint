@@ -89,7 +89,7 @@ class EmployeeExtraAllowance extends Model
                     'amount' => $request->get("type") == "1" ? $request->get('amount') : round(((((float)$request->get("amount"))/100) * $employee->salary),2),
                     'tenure' => $request->get("tenure"),
                     'start_date' => $request->get("start_date"),
-                    'end_date' => $request->get("tenure") < 1 ? NULL : date('Y-m-d',strtotime("+ ".$request->get("tenure")." months",strtotime($request->get("start_date")))),
+                    'end_date' => $request->get("tenure") < 1 ? NULL : date('Y-m-d',strtotime("+ ".($request->get("tenure") -1)." months",strtotime($request->get("start_date")))),
                     'status' => '1',
                     'comment' => $request->get("tenure") < 1 ? "Run indefinitely" : NULL,
                     'total_amount' => $request->get("tenure") < 1 ? $request->get('amount') : ($request->get("tenure") * ($request->get("type") == "1" ? $request->get('amount') : round(((((float)$request->get("amount"))/100) * $employee->salary),2)))

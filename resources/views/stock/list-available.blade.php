@@ -16,11 +16,18 @@
                 <section class="panel">
                     <header class="panel-heading panel-border">
                         {{ $title }}
-                        @if(userCanView('stock.create'))
-                            <span class="tools pull-right">
-                                            <a  href="{{ route('stock.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> New Stock</a>
+                        @if(userCanView("stock.available_custom"))
+                            <span class="tools pull-right" style="margin-right: 30px">
+                                  <div class="form-group">
+                                      <label>Select Store</label>
+                                      <select class="form-control form-control-lg change_store" name="store">
+                                            @foreach(getStores() as $_store)
+                                                <option  {{ $_store->id === $store->id ? "selected" : "" }} value="{{ $_store->id }}">{{ $_store->name }}</option>
+                                            @endforeach
+                                      </select>
+                                  </div>
                             </span>
-                        @endif
+                            @endif
                     </header>
                     <div class="panel-body">
                         <form action="" method="get">
@@ -52,11 +59,11 @@
                                 <th>Selling Price</th>
                                 <th>Cost Price</th>
                                 @if(config('app.store') == "inventory")
-                                <th>Yard Selling Price</th>
-                                <th>Yard Cost Price</th>
+                                    <th>Yard Selling Price</th>
+                                    <th>Yard Cost Price</th>
                                 @endif
                                 @if(config('app.store') == "hotel")
-                                 <th>VIP Selling Price</th>
+                                    <th>VIP Selling Price</th>
                                 @endif
                                 <th>Action</th>
                             </tr>
@@ -67,15 +74,15 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $batch->stock->name }}</td>
                                     <td>{{ $batch->stock->type }}</td>
-                                    <td>{{ $batch->stock->available_quantity }}</td>
+                                    <td>{{ $batch->{ $store->packed_column } }}</td>
                                     @if(config('app.store') == "inventory")
-                                        <td>{{ $batch->stock->available_yard_quantity }}</td>
+                                        <td>{{ $batch->{ $store->yard_column } }}</td>
                                     @endif
                                     <td>{{ number_format($batch->stock->selling_price,2) }}</td>
                                     <td>{{ number_format($batch->stock->cost_price,2) }}</td>
                                     @if(config('app.store') == "inventory")
-                                    <td>{{ number_format($batch->stock->yard_selling_price,2) }}</td>
-                                    <td>{{ number_format($batch->stock->yard_cost_price,2) }}</td>
+                                        <td>{{ number_format($batch->stock->yard_selling_price,2) }}</td>
+                                        <td>{{ number_format($batch->stock->yard_cost_price,2) }}</td>
                                     @endif
                                     @if(config('app.store') == "hotel")
                                         <td>{{ number_format($batch->stock->vip_selling_price,2) }}</td>
@@ -91,9 +98,9 @@
                                                 @if(userCanView('stock.toggle'))
                                                     <li><a href="{{ route('stock.toggle',$batch->stock->id) }}">{{ $batch->stock->status == 0 ? 'Enabled' : 'Disabled' }}</a></li>
                                                 @endif
-                                                    @if(userCanView('stock.stock_report'))
-                                                        <li><a href="{{ route('stock.stock_report',$batch->stock->id) }}">Product Report</a></li>
-                                                    @endif
+                                                @if(userCanView('stock.stock_report'))
+                                                    <li><a href="{{ route('stock.stock_report',$batch->stock->id) }}">Product Report</a></li>
+                                                @endif
                                             </ul>
                                         </div>
                                     </td>
@@ -121,4 +128,14 @@
     <script data-turbolinks-eval="false" data-turbo-eval="false"  src="{{ asset('bower_components/datatables-responsive/js/dataTables.responsive.js') }}"></script>
     <script data-turbolinks-eval="false" data-turbo-eval="false"  src="{{ asset('bower_components/datatables-scroller/js/dataTables.scroller.js') }}"></script>
     <script src="{{ asset('assets/js/init-datatables.js') }}"></script>
+    <script>
+        window.onload = function()
+        {
+            $(document).ready(function(){
+                $('.change_store').on("change",function(){
+                    window.location = '{{ route('stock.available_custom',"") }}/'+$(this).val();
+                })
+            });
+        }
+    </script>
 @endpush

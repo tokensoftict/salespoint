@@ -33,7 +33,7 @@ class CreateEmployeesTable extends Migration
             $table->foreignId('bank_id')->nullable()->constrained()->nullOnDelete();
             $table->string('bank_account_no', 20)->nullable();
             $table->string('bank_account_name', 60)->nullable();
-            $table->decimal('salary', 20, 2)->unsigned()->default(0);
+            $table->decimal('salary', 20, 2)->nullable();
             $table->boolean('permanent')->index()->default(false);
             $table->timestamps();
         });

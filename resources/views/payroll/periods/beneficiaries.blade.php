@@ -24,14 +24,15 @@
                                     <th>#</th>
                                     <th>Employee No</th>
                                     <th>Name</th>
-                                    <th>Scale</th>
+                                    <th>Rank</th>
+                                    <th>Total Allowance</th>
                                     <th>Gross Pay</th>
                                     <th>Total Deduction</th>
                                     <th>Net Pay</th>
                                     <th>Bank</th>
                                     <th>Bank Account Name</th>
                                     <th>Bank Account No</th>
-                                    <th>Action</th>
+                                   <!-- <th>Action</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,16 +41,18 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $beneficiary->employee->employee_no }}</td>
                                             <td>{{ $beneficiary->employee->name }}</td>
-                                            <td>{{ $beneficiary->scale->name }}</td>
+                                            <td>{{ $beneficiary->rank->name ?? "" }}</td>
+                                            <td>{{ number_format($beneficiary->total_allowance,2) }}</td>
                                             <td>{{ number_format($beneficiary->gross_pay,2) }}</td>
                                             <td>{{ number_format($beneficiary->total_deduction,2) }}</td>
                                             <td>{{ number_format($beneficiary->net_pay,2) }}</td>
-                                            <td>{{ $beneficiary->bank->name }}</td>
-                                            <td>{{ $beneficiary->account_name }}</td>
-                                            <td>{{ $beneficiary->account_no }}</td>
-                                            <td>
+                                            <td>{{ $beneficiary->bank->name ?? "" }}</td>
+                                            <td>{{ $beneficiary->account_name ?? "" }}</td>
+                                            <td>{{ $beneficiary->account_no ?? "" }}</td>
+                                           <!-- <td>
                                                 <a href="" class="btn btn-sm btn-primary">Payslip</a>
                                             </td>
+                                            -->
                                         </tr>
                                 @endforeach
                             </tbody>

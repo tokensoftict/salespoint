@@ -156,10 +156,10 @@ class StockController extends Controller
     }
 
 
-    public function available(Request  $request){
+    public function available(Request $request, Warehousestore $warehousestore = NULL){
 
         $sql = "";
-        $store = getActiveStore();
+        $store = $warehousestore == NULL ?  getActiveStore() : $warehousestore;
 
         $sql .= "SUM(" . $store->packed_column . ") as " . $store->packed_column . ",";
         $sql .= "SUM(" . $store->yard_column . ") as " . $store->yard_column . ",";

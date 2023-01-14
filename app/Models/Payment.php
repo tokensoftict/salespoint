@@ -163,6 +163,7 @@ class Payment extends Model
             foreach($paymentInformation['payment_info']['split_method'] as $pmthod=>$amount)
             {
                 if(intval($amount) > 0) {
+                    $bank = $paymentInformation['payment_info']['payment_info_data'][$pmthod]['bank_id'] ?? NULL;
                     if ($pmthod != 4) {
                         $splits[] = new PaymentMethodTable([
                             'user_id' => auth()->id(),
@@ -174,7 +175,8 @@ class Payment extends Model
                             'warehousestore_id' => getActiveStore()->id,
                             'payment_date' => date('Y-m-d'),
                             'amount' => $amount,
-                            'payment_info' => json_encode($paymentInformation['payment_info']['payment_info_data'][$pmthod])
+                            'bank_account_id'=>$bank,
+                            'payment_info' => json_encode(($paymentInformation['payment_info']['payment_info_data'][$pmthod] ?? []))
                         ]);
                     } else {
                         $credit_payment_info = [
@@ -222,6 +224,7 @@ class Payment extends Model
                 'warehousestore_id' => getActiveStore()->id,
                 'payment_date' => date('Y-m-d'),
                 'amount' => $paymentInformation['invoice']->sub_total,
+                'bank_account_id'=>$paymentInformation['payment_info']['bank_id'] ?? NULL,
                 'payment_info' => json_encode(Arr::get($paymentInformation, 'payment_info'))
             ]));
 

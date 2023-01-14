@@ -17,20 +17,26 @@ function generateRandom($length = 25) {
     return $randomString;
 }
 
-function loadUserMenu()
+function loadUserMenu($user_id = NULL)
 {
     $groupMenu = [];
-    if (myAccessGroup()) {
-        $groupMenu = myAccessGroup()
+    $accessgroup = Cache::remember('route-permission-'.($user_id == NULL ? auth()->id() : $user_id),86400, function() use ($user_id){
+        if($user_id !== NULL)  return \App\Models\User::find($user_id)->group;
+
+        return myAccessGroup();
+    });
+    if ( $accessgroup) {
+        $groupMenu = $accessgroup
             ->load(['tasks' => function ($q) {
                 $q->join('modules', 'modules.id', '=', 'tasks.module_id');
                 //$q->orderBy('modules.order', "ASC");
                 $q->orderBy('tasks.module_id', "ASC")->orderBy('tasks.id');
             }]);
     }
-
     return $groupMenu;
 }
+
+
 
 function myAccessGroup()
 {
@@ -89,7 +95,11 @@ function userPermissions()
  */
 function userCanView($route)
 {
-    $tasks = userPermissions();
+    $tasks = Cache::remember('route-task-permission-'.auth()->id(), 86400, function() use(&$route)
+    {
+        return userPermissions();
+    });
+
     return $tasks->contains(function ($task, $key) use ($route) {
         return $task->route == $route;
     });
@@ -551,6 +561,10 @@ function invoice_status($status){
         return label(ucwords($status),"success");
     }else if($status == "DELETED"){
         return label(ucwords($status),"danger");
+    }else if($status == "PENDING-APPROVAL"){
+        return label(ucwords($status),"primary");
+    }else if($status == "APPROVED"){
+        return label(ucwords($status),"success");
     }
 }
 
@@ -607,9 +621,33 @@ function getActualStore($product_type,$store_selected){
 
 }
 
+function getStores($refresh = true)
+{
+    if($refresh == true){
+        Cache::forget('warehouseandshops');
+    }
+    if(!Cache::has('warehouseandshops')){
+        Cache::remember('warehouseandshops',144000,function(){
+            return Warehousestore::select('id','name','packed_column','yard_column')->where('status',1)->get();
+        });
+    }
+    return Cache::get('warehouseandshops');
+}
+
+function realActiveStore()
+{
+    if(!Cache::has('warehouseandshop')){
+        Cache::remember('warehouseandshop',144000,function(){
+            return Warehousestore::select('id','name','packed_column','yard_column')->where('default',1)->where('status',1)->first();
+        });
+    }
+    return Cache::get('warehouseandshop')->id;
+}
 
 function getActiveStore($force = false){
     if(auth()->user()->warehousestore_id !== NULL) return auth()->user()->warehousestore;
+    if(userCanView("stock.available_custom") && request()->get("global_filter_store")) return Warehousestore::select('id','name','packed_column','yard_column')->where("id",request()->get("global_filter_store"))->first();
+
     if($force == true){
         Cache::forget('warehouseandshop');
     }

@@ -36,6 +36,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Customer</th>
+                                <th>Deposit Number</th>
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Store</th>
@@ -49,6 +50,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $deposit->customer->firstname }} {{ $deposit->customer->lastname }}</td>
+                                    <td>{{ $deposit->deposit_number }}</td>
                                     <td>{{ convert_date($deposit->deposit_date) }}</td>
                                     <td>{{ number_format($deposit->amount,2) }}</td>
                                     <td>{{ $deposit->warehousestore->name }}</td>
@@ -59,10 +61,10 @@
                                             <a onclick="open_print_window(this); return false" href="{{ route('deposits.print_afour',$deposit->id) }}" class="btn btn-sm btn-success">Print</a>
                                         @endif
                                         @if(userCanView('deposits.edit'))
-                                            <a onclick="open_print_window(this); return false" href="{{ route('deposits.edit',$deposit->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                            <a  href="{{ route('deposits.edit',$deposit->id) }}" class="btn btn-sm btn-primary">Edit</a>
                                         @endif
                                         @if(userCanView('deposits.destroy'))
-                                            <a onclick="open_print_window(this); return false" href="{{ route('deposits.destroy',$deposit->id) }}" class="btn btn-sm btn-danger">Delete</a>
+                                            <a  href="{{ route('deposits.destroy',$deposit->id) }}" class="btn btn-sm btn-danger">Delete</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -71,6 +73,7 @@
                             </tbody>
                             <tfoot>
                             <tr>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th>Total</th>

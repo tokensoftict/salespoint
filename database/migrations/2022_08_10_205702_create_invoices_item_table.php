@@ -36,6 +36,7 @@ class CreateInvoicesItemTable extends Migration
             $table->decimal("total_profit",20,5)->nullable();
             $table->string("discount_type")->nullable(); //['Fixed','Percentage','None']
             $table->decimal("discount_amount",20,5)->nullable();
+            $table->boolean("is_approve")->default(1);
             $table->timestamps();
         });
     }

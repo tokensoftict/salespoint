@@ -17,7 +17,7 @@
                 <section class="panel">
                     <header class="panel-heading">
                         {{ $title }}
-
+                        <x-store-selector/>
                         <form action=""  class="tools pull-right" style="margin-right: 80px" method="post">
                             {{ csrf_field() }}
                             <div class="row">
@@ -42,6 +42,8 @@
                                     <select class="form-control" name="status">
                                         <option {{ $status == "COMPLETE" ? "selected" : "" }} value="COMPLETE">COMPLETE</option>
                                         <option {{ $status == "DRAFT" ? "selected" : "" }} value="DRAFT">DRAFT</option>
+                                        <option {{ $status == "APPROVED" ? "selected" : "" }} value="APPROVED">APPROVED</option>
+                                        <option {{ $status == "PENDING-APPROVAL" ? "selected" : "" }} value="PENDING-APPROVAL">PENDING-APPROVAL</option>
                                     </select>
                                 </div>
                                 <div class="col-sm-1"><br/>
@@ -57,85 +59,8 @@
                         @elseif(session('error'))
                             {!! alert_error(session('error')) !!}
                         @endif
-                        <table class="table table-bordered table-responsive table convert-data-table table-striped" id="invoice-list" style="font-size: 12px">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Invoice/Receipt No</th>
-                                <th>Customer</th>
-                                <th>Status</th>
-                                <th>Sub Total</th>
-                                <th>Total Paid</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>By</th>
-                                <th>Created</th>
-                                <th>Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @php
-                                $total = 0;
-                            @endphp
-                            @foreach($invoices as $invoice)
-                                @php
-                                    $total += $invoice->total_amount_paid;
-                                @endphp
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $invoice->invoice_paper_number }}</td>
-                                    <td>{{ $invoice->customer->firstname }} {{ $invoice->customer->lastname }}</td>
-                                    <td>{!! invoice_status($invoice->status) !!}</td>
-                                    <td>{{ number_format($invoice->sub_total,2) }}</td>
-                                    <td>{{ number_format($invoice->total_amount_paid,2) }}</td>
-                                    <td>{{ convert_date2($invoice->invoice_date) }}</td>
-                                    <td>{{ date("h:i a",strtotime($invoice->sales_time)) }}</td>
-                                    <td>{{ $invoice->created_user->name }}</td>
-                                    <td>{{ $invoice->created_at }}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle btn-xs" type="button" aria-expanded="false">Action <span class="caret"></span></button>
-                                            <ul role="menu" class="dropdown-menu">
-                                                @if(userCanView('invoiceandsales.view'))
-                                                    <li><a href="{{ route('invoiceandsales.view',$invoice->id) }}">View Invoice</a></li>
-                                                @endif
-                                                    @if(userCanView('invoiceandsales.edit') && $invoice->sub_total > -1)
-                                                        <li><a href="{{ route('invoiceandsales.edit',$invoice->id) }}">Edit Invoice</a></li>
-                                                    @endif
+                            <x-invoice-list-component :invoices="$invoices"/>
 
-                                                @if(userCanView('invoiceandsales.destroy') && $invoice->status =="DRAFT")
-                                                    <li><a href="{{ route('invoiceandsales.destroy',$invoice->id) }}">Delete Invoice</a></li>
-                                                @endif
-                                                @if(userCanView('invoiceandsales.pos_print'))
-                                                    <li><a href="{{ route('invoiceandsales.pos_print',$invoice->id) }}">Print Invoice Pos</a></li>
-                                                @endif
-                                                @if(userCanView('invoiceandsales.print_afour'))
-                                                    <li><a href="{{ route('invoiceandsales.print_afour',$invoice->id) }}">Print Invoice A4</a></li>
-                                                @endif
-                                                @if(userCanView('invoiceandsales.print_way_bill'))
-                                                    <li><a href="{{ route('invoiceandsales.print_way_bill',$invoice->id) }}">Print Waybill</a></li>
-                                                @endif
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th>{{ number_format($invoices->sum('sub_total'),2) }}</th>
-                                <th>{{ number_format($total,2) }}</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            </tfoot>
-                        </table>
                     </div>
                 </section>
             </div>

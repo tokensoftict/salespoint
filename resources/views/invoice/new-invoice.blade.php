@@ -311,6 +311,16 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="belowCostPrice" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+        <div class="modal-dialog modal-dialog-center modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center" id="belowCostPrice_div">
+
+                </div>
+            </div>
+        </div>
+    </div>
     @if(userCanView('customer.store'))
         <div class="modal fade" id="newCustomer" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
         <div class="modal-dialog">
@@ -360,6 +370,7 @@
 @push('js')
     <script>
         productfindurl = "{{ route('findstock') }}"
+        window.submit_data = {};
     </script>
     <script data-turbolinks-eval="false" data-turbo-eval="false" src="{{ asset('bower_components/select2/dist/js/select2.min.js') }}"></script>
     <script data-turbolinks-eval="false" data-turbo-eval="false" src="{{ asset('assets/js/init-select2.js') }}"></script>
@@ -641,8 +652,11 @@
             return '<tr style="cursor: pointer" id="product_'+data.stock.id+'"><th  class="text-center"><input data-image="'+data.stock.image+'" name="picture" class="picture" value="1" type="radio"></th><th>'+data.stock.name+'<div id="error_'+data.stock.id+'" class="errors alert alert-danger" '+(data['error'] ? '' : 'style="display:none;"')+'>'+(data['error'] ? data['error'] : '')+'</div>'+'</th><td><div class="col-md-4"><div class="input-group"> <span class="input-group-btn input-group-sm"> <button  data-field="quant[1]" type="button" class="btn btn-danger btn-number minus" data-type="minus"> <i class="fa fa-minus"></i></button></span><input class="form-control text-center input-number" data-id="'+data.stock.id+'" data-price="'+data.stock.selling_price+'" style="width:100px;display: block;" required="" max="'+data.stock.available_quantity+'" min="1" type="number" value="1"> <span class="input-group-btn"> <button type="button" class="btn btn-primary btn-number plus" data-type="plus"><i class="fa fa-plus"></i> </button> </span></div></div><td>'+type_select+'</td><th class="text-right item_price">@if(config('app.store')=="inventory")<input type="text" step="0.00000001" class="item_text_price form-control" value="'+data.stock.selling_price+'"/>@else'+formatMoney(data.stock.selling_price)+'  @endif</th><th class="text-right item_total">'+formatMoney(data.stock.selling_price)+'</th><td class="text-right"> <a href="#" onclick="return removeItem(this);" class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i></a></td></tr>';
         }
 
-        function ProcessInvoice(btn){
 
+
+
+        function ProcessInvoice(btn)
+        {
             const stock = wrapItemIncart();
 
             if(stock.length === 0){
@@ -655,7 +669,7 @@
                 alert('Please enter Invoice / Receipt No from the manual invoice');
                 return false;
             }
-                    @endif
+            @endif
 
             let payment_payment = false;
 
@@ -669,7 +683,57 @@
 
             }
 
+            if(!document.getElementById('customer_id')){
+                alert('Please select a customer to proceed..');
+                return false;
+            }
 
+            $('.submit_btn').attr('disabled','disabled');
+            $('.errors').attr('style','display:none');
+            showMask('Creating Invoice, Please wait...');
+
+            window.submit_data = {
+                'data' : JSON.stringify(stock),
+                "_token": "{{ csrf_token() }}",
+                'status': status,
+                'customer_id' :$('#customer_id').val(),
+                'sales_rep' : $("#sales_rep").val(),
+                'date':$('#invoice_date').val(),
+                'invoice_paper_number' : $('#invoice_paper_number').val(),
+                'payment' : JSON.stringify(payment_payment)
+            };
+
+            SendInvoice(btn);
+        }
+
+
+        function adjustInvoice()
+        {
+            $('#belowCostPrice').modal("hide")
+            hideMask();
+            return false;
+        }
+
+
+        function submitInvoiceForApproval(btn)
+        {
+            $('#belowCostPrice').modal('hide');
+
+            hideMask();
+
+            const stock = wrapItemIncart();
+
+            if(stock.length === 0){
+                alert('You can not submit an empty cart, please add product to continue');
+                return false;
+            }
+
+            @if(config('app.store') == "inventory")
+            if($('#invoice_paper_number').val() == ""){
+                alert('Please enter Invoice / Receipt No from the manual invoice');
+                return false;
+            }
+            @endif
 
             if(!document.getElementById('customer_id')){
                 alert('Please select a customer to proceed..');
@@ -680,24 +744,34 @@
             $('.errors').attr('style','display:none');
             showMask('Creating Invoice, Please wait...');
 
+            window.submit_data = {
+                'data' : JSON.stringify(stock),
+                "_token": "{{ csrf_token() }}",
+                'status': "PENDING-APPROVAL",
+                'customer_id' :$('#customer_id').val(),
+                'sales_rep' : $("#sales_rep").val(),
+                'date':$('#invoice_date').val(),
+                'invoice_paper_number' : $('#invoice_paper_number').val(),
+            };
+
+            SendInvoice(btn);
+
+        }
+
+
+
+
+        function SendInvoice(btn){
             var timeout = setTimeout(function(){
                 hideMask();
                 alert('error - request timeout, please try generating the invoice again');
                 $('.submit_btn').removeAttr('disabled');
-            },30000);
+            },61000);
+
             $.ajax({
                 url: '{{ route('invoiceandsales.create') }}',
                 method : 'POST',
-                data: {
-                    'data' : JSON.stringify(stock),
-                    "_token": "{{ csrf_token() }}",
-                    'status': status,
-                    'customer_id' :$('#customer_id').val(),
-                    'sales_rep' : $("#sales_rep").val(),
-                    'date':$('#invoice_date').val(),
-                    'invoice_paper_number' : $('#invoice_paper_number').val(),
-                    'payment' : JSON.stringify(payment_payment)
-                },
+                data: window.submit_data,
                 success: function(returnData){
                     hideMask();
                     clearTimeout(timeout);
@@ -713,7 +787,17 @@
                             keyboard: false, //remove option to close with keyboard
                             show: true //Display loader!
                         });
-                    }else{
+                    }else if(res.status === "below_cost_error")
+                    {
+                        hideMask();
+                        $('#belowCostPrice_div').html(res.view);
+                        $('#belowCostPrice').modal({
+                            backdrop: "static", //remove ability to close modal with click
+                            keyboard: false, //remove option to close with keyboard
+                            show: true //Display loader!
+                        });
+                    }
+                    else{
                         //HoldInvoice(document.getElementById('hold_invoice_hold'));
                         hideMask();
                         var errors = res.error;
@@ -895,12 +979,12 @@
                 if( error === true){
                     return false;
                 }
-                @if(config('app.store') == "hotel")
-                if(total < calculateTotal()){
-                    alert("Total Invoice amount not equal to amount paid, please check");
+
+                if(total > calculateTotal()){
+                    alert("Total Invoice Payment can not be greater than invoice total, please check");
                     return false;
                 }
-                @endif
+
                     return {
                     'split_method':data,
                     'payment_method_id':$('#payment_method').val(),

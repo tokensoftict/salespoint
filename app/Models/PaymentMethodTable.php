@@ -12,7 +12,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class PaymentMethodTable
- * 
+ *
  * @property int $id
  * @property int|null $user_id
  * @property int|null $customer_id
@@ -25,7 +25,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string|null $payment_info
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Customer|null $customer
  * @property Payment|null $payment
  * @property PaymentMethod|null $payment_method
@@ -46,6 +46,7 @@ class PaymentMethodTable extends Model
         'warehousestore_id' => 'int',
 		'payment_method_id' => 'int',
 		'invoice_id' => 'int',
+        'bank_account_id' =>'int',
 		'amount' => 'float'
 	];
 
@@ -64,8 +65,14 @@ class PaymentMethodTable extends Model
 		'invoice_id',
 		'payment_date',
 		'amount',
+        'bank_account_id',
 		'payment_info'
 	];
+
+    public function bankAccount()
+    {
+        return $this->belongsTo(BankAccount::class);
+    }
 
     public function warehousestore()
     {

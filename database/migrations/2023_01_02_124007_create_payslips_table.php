@@ -26,6 +26,7 @@ class CreatePayslipsTable extends Migration
             $table->string('account_no', 30)->nullable();
             $table->decimal('gross_pay', 20, 2)->default(0);
             $table->decimal('total_deduction', 20, 2)->default(0);
+            $table->decimal('total_allowance', 20, 2)->default(0);
             $table->decimal('net_pay', 20, 2)->default(0);
             $table->timestamps();
         });

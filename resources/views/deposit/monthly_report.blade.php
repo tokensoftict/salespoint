@@ -44,57 +44,60 @@
                             {!! alert_error(session('error')) !!}
                         @endif
 
-                        <table class="table table-bordered table-responsive table convert-data-table table-striped" style="font-size: 12px">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Customer</th>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Store</th>
-                                <th>Time</th>
-                                <th>Created By</th>
-                                <th>Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @forelse($deposits as $deposit)
+                            <table class="table table-bordered table-responsive table convert-data-table table-striped" style="font-size: 12px">
+                                <thead>
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $deposit->customer->firstname }} {{ $deposit->customer->lastname }}</td>
-                                    <td>{{ convert_date($deposit->deposit_date) }}</td>
-                                    <td>{{ number_format($deposit->amount,2) }}</td>
-                                    <td>{{ $deposit->warehousestore->name }}</td>
-                                    <td>{{ str_date($deposit->deposit_time) }}</td>
-                                    <td>{{ $deposit->user->name }}</td>
-                                    <td>
-                                        @if(userCanView('deposits.print_afour'))
-                                            <a href="{{ route('deposits.print_afour',$deposit->id) }}" class="btn btn-sm btn-success">Print</a>
-                                        @endif
-                                        @if(userCanView('deposits.edit'))
-                                            <a href="{{ route('deposits.edit',$deposit->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                        @endif
-                                        @if(userCanView('deposits.destroy'))
-                                            <a href="{{ route('deposits.destroy',$deposit->id) }}" class="btn btn-sm btn-danger">Delete</a>
-                                        @endif
-                                    </td>
+                                    <th>#</th>
+                                    <th>Customer</th>
+                                    <th>Deposit Number</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Store</th>
+                                    <th>Time</th>
+                                    <th>Created By</th>
+                                    <th>Action</th>
                                 </tr>
-                            @empty
-                            @endforelse
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>Total</th>
-                                <th>{{ number_format($deposits->sum('amount'),2) }}</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                @forelse($deposits as $deposit)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $deposit->customer->firstname }} {{ $deposit->customer->lastname }}</td>
+                                        <td>{{ $deposit->deposit_number }}</td>
+                                        <td>{{ convert_date($deposit->deposit_date) }}</td>
+                                        <td>{{ number_format($deposit->amount,2) }}</td>
+                                        <td>{{ $deposit->warehousestore->name }}</td>
+                                        <td>{{ str_date($deposit->deposit_time) }}</td>
+                                        <td>{{ $deposit->user->name }}</td>
+                                        <td>
+                                            @if(userCanView('deposits.print_afour'))
+                                                <a onclick="open_print_window(this); return false" href="{{ route('deposits.print_afour',$deposit->id) }}" class="btn btn-sm btn-success">Print</a>
+                                            @endif
+                                            @if(userCanView('deposits.edit'))
+                                                <a  href="{{ route('deposits.edit',$deposit->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                            @endif
+                                            @if(userCanView('deposits.destroy'))
+                                                <a   href="{{ route('deposits.destroy',$deposit->id) }}" class="btn btn-sm btn-danger">Delete</a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                @endforelse
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Total</th>
+                                    <th>{{ number_format($deposits->sum('amount'),2) }}</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
+                            </table>
                     </div>
                 </section>
             </div>

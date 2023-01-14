@@ -88,6 +88,10 @@
             <td>{{ $invoice->invoice_number }}</td>
         </tr>
         <tr>
+            <td>Store</td>
+            <td>{{ $invoice->warehousestore->name }}</td>
+        </tr>
+        <tr>
             <td>Invoice Date</td>
             <td>{{ convert_date($invoice->invoice_date)  }}</td>
         </tr>
@@ -103,7 +107,9 @@
             <td>Status</td>
             <td>{{ $invoice->status }}</td>
         </tr>
-        <tr>        <tr>
+        <tr>
+        @if($invoice->status === "COMPLETE")
+        <tr>
             <td>Mode of Payment</td>
             <td>
                 @if($invoice->paymentMethodTable->count() > 1)
@@ -123,6 +129,7 @@
                 @endif
             </td>
         </tr>
+        @endif
         <tr>
             <td>Credit Balance</td>
             <td>{{ number_format($invoice->customer->credit_balance,2) }}</td>

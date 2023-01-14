@@ -14,6 +14,7 @@ use App\Models\PaymentMethod;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use View;
 
 class InvoiceController extends Controller
 {
@@ -49,6 +50,13 @@ class InvoiceController extends Controller
         return setPageContent('invoice.draft-invoice',$data);
     }
 
+    public function approved(){
+        $data = [];
+        $data['title'] = 'Approved Invoice List';
+        $data['invoices'] = Invoice::with(['created_user','customer'])->where('warehousestore_id', getActiveStore()->id)->where('status','APPROVED')->where('invoice_date',date('Y-m-d'))->get();
+        return setPageContent('invoice.approved-invoice',$data);
+    }
+
     public function paid(){
         $data = [];
         $data['title'] = 'Completed Invoice List';
@@ -56,10 +64,23 @@ class InvoiceController extends Controller
         return setPageContent('invoice.paid-invoice',$data);
     }
 
+    public function waiting_approval(){
+        $data = [];
+        $data['title'] = 'Waiting For Approval Invoice List';
+        $data['invoices'] = Invoice::with(['created_user','customer'])->where('warehousestore_id', getActiveStore()->id)->where('status','PENDING-APPROVAL')->where('invoice_date',date('Y-m-d'))->get();
+        return setPageContent('invoice.waiting-invoice',$data);
+    }
+
     public function update(Request $request, $id){
+
         $invoice = Invoice::findorfail($id);
 
         $reports = Invoice::validateInvoiceUpdateProduct(json_decode($request->get('data'),true),'quantity', $invoice);
+
+        if(count($reports['below_cost_price']) > 0 && $request->get("status") !== "PENDING-APPROVAL") return response()->json([
+                'status'=>"below_cost_error",
+                'view'=> (string) View::make('invoice.below_cost_price_error',['reports'=>$reports['below_cost_price']])->render()]
+        );
 
         if($reports['status'] == true) return response()->json(['status'=>false,'error'=>$reports['errors']]);
 
@@ -81,14 +102,20 @@ class InvoiceController extends Controller
             $invoice->update();
         }
 
-        $success_view = view('invoice.success-updated',['invoice_id'=> $invoice->id])->render();
+        $success_view = view('invoice.success-updated',['invoice'=> $invoice])->render();
 
         return json(['status'=>true,'html'=>$success_view]);
     }
 
     public function create(Request $request){
 
-        $reports = Invoice::validateInvoiceProduct(json_decode($request->get('data'),true),'quantity');    // validate products if the quantity is okay
+        $reports = Invoice::validateInvoiceProduct(json_decode($request->get('data'),true),'quantity');     //validate products if the quantity is okay
+         //validate if selling product below cost_price
+
+        if(count($reports['below_cost_price']) > 0 && $request->get("status") !== "PENDING-APPROVAL") return response()->json([
+            'status'=>"below_cost_error",
+            'view'=> (string) View::make('invoice.below_cost_price_error',['reports'=>$reports['below_cost_price']])->render()]
+        );
 
         if($reports['status'] == true) return response()->json(['status'=>false,'error'=>$reports['errors']]);
 
@@ -110,7 +137,7 @@ class InvoiceController extends Controller
 
         }
 
-        $success_view = view('invoice.success',['invoice_id'=> $invoice->id])->render();
+        $success_view = view('invoice.success',['invoice'=> $invoice])->render();
 
         return json(['status'=>true,'html'=>$success_view]);
     }
@@ -174,12 +201,19 @@ class InvoiceController extends Controller
     }
 
 
-    public function complete_invoice_no_edit($id, Request $request)
+    public function complete_invoice_no_edit(Invoice $invoice, Request $request)
     {
-        $invoice = Invoice::findorfail($id);
-        if($invoice->status == "COMPLETE") return redirect()->route('invoiceandsales.view',$id)->with('success','Invoice has been completed successfully!');
+        if($invoice->status == "COMPLETE") return response()->json(['status'=>true]);
 
-        $payment = Payment::createPayment(['invoice'=>$invoice,'payment_info'=>$request,"type"=>"Invoice"]);
+            //return redirect()->route('invoiceandsales.view',$invoice->id)->with('success','Invoice has been completed successfully!');
+
+        $repsonse = Invoice::validateDepositPaymentApprovedPayNowUsage($invoice);
+
+        if(is_array($repsonse)) return response()->json(['status'=>false,"error"=>$repsonse['errors']]);
+
+            //return redirect()->route('invoiceandsales.view',$invoice->id)->with('error',$repsonse['errors']);
+
+        $payment = Payment::createPayment(['invoice'=>$invoice,'payment_info'=>$request->get("payment"),"type"=>"Invoice"]);
 
         $invoice->payment_id = $payment->id;
 
@@ -189,8 +223,9 @@ class InvoiceController extends Controller
 
         $invoice->update();
 
+        return response()->json(['status'=>true]);
 
-        return redirect()->route('invoiceandsales.view',$id)->with('success','Invoice has been completed successfully!');
+        //return redirect()->route('invoiceandsales.view',$invoice->id)->with('success','Invoice has been completed successfully!');
     }
 
     public function edit($id){
@@ -204,12 +239,18 @@ class InvoiceController extends Controller
     }
 
 
+    public function send_draft_invoice(Invoice  $invoice)
+    {
+        $invoice->status = "DRAFT";
+
+        $invoice->update();
+
+        return redirect()->route('invoiceandsales.view',$invoice->id)->with('success','Invoice status has been changed to draft successfully!');
+    }
+
     public function destroy($id){
         $invoice = Invoice::findorfail($id);
-
-        if($invoice->status == "DRAFT")
-            $invoice->delete();
-
+        $invoice->destroyInvoice();
         return redirect()->route('invoiceandsales.draft')->with('success','Invoice has been deleted successfully');
 
     }
@@ -248,6 +289,22 @@ class InvoiceController extends Controller
 
         return json(['status'=>true,'html'=>$success_view]);
 
+    }
+
+
+
+    public function approve(Invoice $invoice)
+    {
+        $invoice->approveInvoice();
+
+        return redirect()->route('invoiceandsales.waiting_approval')->with('success','Invoice has been approved successfully!');
+    }
+
+    public function decline(Invoice $invoice)
+    {
+        $invoice->declineInvoice();
+
+        return redirect()->route('invoiceandsales.waiting_approval')->with('success','Invoice has been decline successfully!');
     }
 
 }

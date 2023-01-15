@@ -105,4 +105,9 @@ class EmployeeExtraAllowance extends Model
         $this->update();
     }
 
+    public function item()
+    {
+        return $this->morphOne(PayslipsItem::class,'payable');
+    }
+
 }

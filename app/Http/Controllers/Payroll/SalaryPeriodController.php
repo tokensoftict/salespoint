@@ -9,6 +9,7 @@ use App\Models\Deduction;
 use App\Models\EmployeeExtraAllowance;
 use App\Models\EmployeeExtraDeduction;
 use App\Models\PayrollPeriod;
+use App\Models\Payslip;
 use Illuminate\Http\Request;
 use Excel;
 
@@ -115,6 +116,13 @@ class SalaryPeriodController extends Controller
     {
         $employeeExtraAllowance->stop();
         return redirect()->route('periods.list_allowance')->with('success','Extra Allowance has been stopped successfully!');
+    }
+
+
+    public function payslip(PayrollPeriod $payrollPeriod, Payslip $payslip)
+    {
+
+        return view("print.payslips",['period'=>$payrollPeriod,"payslip"=>$payslip]);
     }
 
 }

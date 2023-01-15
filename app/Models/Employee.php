@@ -141,7 +141,7 @@ class Employee extends Model
 
     public function getImageAttribute()
     {
-        if(empty($this->getOriginal('photo'))) return NULL;
+        if(empty($this->getOriginal('photo'))) return asset('assets/products.jpg');
 
         return app()->make('url')->to('/').'/'.$this->getOriginal('photo');
     }

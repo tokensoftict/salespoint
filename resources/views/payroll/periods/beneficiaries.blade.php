@@ -32,7 +32,7 @@
                                     <th>Bank</th>
                                     <th>Bank Account Name</th>
                                     <th>Bank Account No</th>
-                                   <!-- <th>Action</th> -->
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,10 +49,12 @@
                                             <td>{{ $beneficiary->bank->name ?? "" }}</td>
                                             <td>{{ $beneficiary->account_name ?? "" }}</td>
                                             <td>{{ $beneficiary->account_no ?? "" }}</td>
-                                           <!-- <td>
-                                                <a href="" class="btn btn-sm btn-primary">Payslip</a>
+                                            <td>
+
+                                                <a href="{{ route("periods.payslip",[$beneficiary->payroll_period_id,$beneficiary->id]) }}" target="new" class="btn btn-sm btn-primary">Payslip</a>
+
                                             </td>
-                                            -->
+
                                         </tr>
                                 @endforeach
                             </tbody>

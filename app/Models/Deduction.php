@@ -58,4 +58,9 @@ class Deduction extends Model
 					->withPivot('id', 'percent', 'amount', 'total_amount', 'start_date', 'end_date', 'status', 'comment')
 					->withTimestamps();
 	}
+
+    public function item()
+    {
+        return $this->morphOne(PayslipsItem::class,'payable');
+    }
 }

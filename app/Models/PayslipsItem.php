@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class PayslipsItem
- * 
+ *
  * @property int $id
  * @property int $payslip_id
  * @property string $payable_type
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $amount
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Payslip $payslip
  *
  * @package App\Models
@@ -47,4 +47,9 @@ class PayslipsItem extends Model
 	{
 		return $this->belongsTo(Payslip::class);
 	}
+
+    public function payable(){
+
+        return $this->morphTo();
+    }
 }

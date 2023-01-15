@@ -531,6 +531,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{payrollPeriod}/close', ['as' => 'close', 'uses' => 'SalaryPeriodController@close_payroll', 'custom_label'=>'Close Payroll']);
                 Route::get('{payrollPeriod}/approve', ['as' => 'approve', 'uses' => 'SalaryPeriodController@approve_payroll', 'custom_label'=>'Approve Payroll']);
                 Route::get('{payrollPeriod}/beneficiary', ['as' => 'beneficiary', 'uses' => 'SalaryPeriodController@beneficiary', 'custom_label'=>'Show Payroll Beneficiary']);
+                Route::get('{payrollPeriod}/{payslip}/payslip', ['as' => 'payslip', 'uses' => 'SalaryPeriodController@payslip', 'custom_label'=>'Print Payslips']);
                 Route::get('{payrollPeriod}/xls', ['as' => 'xls', 'uses' => 'SalaryPeriodController@export_xls', 'custom_label'=>'Export Beneficiary to Excel']);
                 Route::get('{payrollPeriod}/pdf', ['as' => 'pdf', 'uses' => 'SalaryPeriodController@export_pdf', 'custom_label'=>'Export Beneficiary to PDF']);
 

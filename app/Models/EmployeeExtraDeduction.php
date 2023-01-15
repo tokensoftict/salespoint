@@ -104,4 +104,9 @@ class EmployeeExtraDeduction extends Model
         $this->comment = "Manual Stop By ".auth()->user()->name;
         $this->update();
     }
+
+    public function item()
+    {
+        return $this->morphOne(PayslipsItem::class,'payable');
+    }
 }
